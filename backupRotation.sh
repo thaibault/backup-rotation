@@ -39,7 +39,7 @@ backupRotation() {
     # region constants
     local sourcePath='/tmp/source/'
     local targetPath='/tmp/backup/'
-    local eMailAddress='info@torben.website'
+    local eMailAddress='' # Notification are disabled by default.
     local dailyTargetPath='daily/'
     local weeklyTargetPath='weekly/'
     local monthlyTargetPath='monthly/'
@@ -62,16 +62,20 @@ backupRotation() {
     # Check if source files exist and send an email if not
     if [ ! -d "$sourcePath" ]; then
         local date="$(date)"
-        msmtp -t <<EOF
+        local message="Source files on \"$sourcePath\" should be backed up but aren't available."
+        if [[ "$eMailAddress" != '' ]]; then
+            msmtp -t <<EOF
 From: $eMailAddress
 To: $eMailAddress
 Reply-To: $eMailAddress
 Date: $date
 Subject: Source files doesn't exist.
 
-Source files on "$sourcePath" should be backed up but aren't available.
+$message
 
 EOF
+        fi
+        return 1
     fi
     if [[ "$monthDayNumber" == "$backupMonthDayNumber" ]]; then
         local targetFilePath="${targetPath}${dailyTargetPath}${targetDailyFileName}"

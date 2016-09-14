@@ -25,6 +25,8 @@ Features
 - Local and remote backups supported
 - Compressed backups (tar and gz is used).
 - Backup file structure is completely adaptable.
+- Configure an email address to get notified if your backup source isn't
+  available.
 - Works incrementally (can complete interrupted backups after reboot e.g., uses
   rsync)
 - Completely configurable how long you plan to preserve your backup files
