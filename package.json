@@ -1,0 +1,15 @@
+{
+    "name": "backup-rotation",
+    "version": "1.0.0",
+    "documentationWebsite": {
+        "name": "backupRotation",
+        "tagline": "This script allows you to create a local or remote backup rotation for your files.",
+        "trackingCode": "TODO"
+    },
+    "scripts": {
+        "updateDocumentation": "documentationWebsite --log-level info"
+    },
+    "devDependencies": {
+        "documentation-website": "latest"
+    }
+}
