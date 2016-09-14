@@ -24,6 +24,7 @@ Features
 - Daily, weekly and monthly backups as cronjob
 - Local and remote backups supported
 - Compressed backups (tar and gz is used).
+- Backup file structure is completely adaptable.
 - Works incrementally (can complete interrupted backups after reboot e.g., uses
   rsync)
 - Completely configurable how long you plan to preserve your backup files
