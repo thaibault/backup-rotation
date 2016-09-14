@@ -75,6 +75,7 @@ $message
 
 EOF
         fi
+        echo "$message" &>/dev/stderr
         return 1
     fi
     if [[ "$monthDayNumber" == "$backupMonthDayNumber" ]]; then
