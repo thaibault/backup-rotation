@@ -17,23 +17,10 @@
 # Dependencies:
 
 # - bash (or any bash like shell)
+# - date - Print or set the system date and time.
+# - find - Search for files in a directory hierarchy.
 # - test - Check file types and compare values.
-# - echo - Display a line of text.
-# - cat  - Concatenate files and print on the standard output.
-# - ps   - Report a snapshot of the current processes.
-# - sed  - Stream editor for filtering and transforming text.
-# - grep - Searches the named input files (or standard input if no files are
-#          named, or if a single hyphen-minus (-) is given as file name) for
-#          lines containing a match to the given PATTERN. By default, grep
-#          prints the matching lines.
-# - kill - Terminate a specified process.
-# - rm   - Remove files or directories.
-# - tail - Output the last part of files.
-# - tee  - read from standard input and write to standard output and files
-
-# Optional dependencies:
-
-# - sudo - Perform action as another user.
+# - msmtp - An SMTP client.
 
 # Needed for the LSBInitScripts specification.
 ### BEGIN INIT INFO
@@ -64,7 +51,7 @@ backupRotation() {
     local numberOfDailyRetentionDays=14 # Daily backups for the last 14 days.
     local numberOfWeeklyRetentionDays=56 # Weekly backups for the last 2 month.
     local numberOfMonthlyRetentionDays=365 # Monthly backups for the last year.
-    local backupCommand='rsync --recursive --delete --perms --executability --owner --group --times --devices --specials --acls --links --super --whole-file --force --protect-args --hard-links --max-delete=1 --progress --human-readable --itemize-changes --verbose "$sourcePath" "$targetFilePath"'
+    local backupCommand='rsync --recursive --delete --perms --executability --owner --group --times --devices --specials --acls --links --super --whole-file --force --protect-args --hard-links --max-delete=1 --progress --human-readable --itemize-changes --verbose "$sourcePath" "$targetFilePath" && tar --dereference --create --verbose --gzip --file "${targetFilePath}.tar.gz" "$targetFilePath" && rm --recursive --verbose "$targetFilePath"'
     # Folder to delete is the last command line argument.
     local cleanupCommand='rm --recursive --verbose'
     # endregion
@@ -88,7 +75,7 @@ EOF
     fi
     if [[ "$monthDayNumber" == "$backupMonthDayNumber" ]]; then
         local targetFilePath="${targetPath}${dailyTargetPath}${targetDailyFileName}"
-    else if [[ "$weekDayNumber" == "$backupMontheDayNumber" ]]; then
+    elif [[ "$weekDayNumber" == "$backupMontheDayNumber" ]]; then
         local targetFilePath="${targetPath}${dailyTargetPath}${targetDailyFileName}"
     else
         local targetFilePath="${targetPath}${dailyTargetPath}${targetDailyFileName}"
@@ -96,11 +83,14 @@ EOF
     mkdir --parents "$(dirname "$targetFilePath")"
     eval "$backupCommand"
     # Clean outdated daily backups.
-    find "$targetPath" -mtime +"$numberOfDailyRetentionDays" -type d -exec "$cleanupCommand" {} \;
+    find "$targetPath" -mtime +"$numberOfDailyRetentionDays" -type d -exec \
+        "$cleanupCommand" {} \;
     # Clean outdated weekly backups.
-    find "$targetPath" -mtime +"$numberOfWeeklyRetentionDays" -type d -exec "$cleanupCommand" {} \;
+    find "$targetPath" -mtime +"$numberOfWeeklyRetentionDays" -type d -exec \
+        "$cleanupCommand" {} \;
     # Clean outdated monthly backups.
-    find "$targetPath" -mtime +"$numberOfMonthlyRetentionDays" -type d -exec "$cleanupCommand" {} \;
+    find "$targetPath" -mtime +"$numberOfMonthlyRetentionDays" -type d -exec \
+        "$cleanupCommand" {} \;
     # endregion
     return $?
 }
