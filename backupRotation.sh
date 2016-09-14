@@ -47,7 +47,7 @@
 ### END INIT INFO
 __NAME__='backupRotation'
 # endregion
-function backupRotation() {
+backupRotation() {
     # Provides the main module scope.
     # region constants
     local sourcePath='/tmp/source/'
@@ -61,7 +61,12 @@ function backupRotation() {
     local targetMonthlyFileName="$(date +'%m-%Y')"
     local backupWeekDayNumber=6 # Saturday
     local backupMonthDayNumber=1
+    local numberOfDailyRetentionDays=14 # Daily backups for the last 14 days.
+    local numberOfWeeklyRetentionDays=56 # Weekly backups for the last 2 month.
+    local numberOfMonthlyRetentionDays=365 # Monthly backups for the last year.
     local backupCommand='rsync --recursive --delete --perms --executability --owner --group --times --devices --specials --acls --links --super --whole-file --force --protect-args --hard-links --max-delete=1 --progress --human-readable --itemize-changes --verbose "$sourcePath" "$targetFilePath"'
+    # Folder to delete is the last command line argument.
+    local cleanupCommand='rm --recursive --verbose'
     # endregion
     # region controller
     # Get current month and week day number
@@ -91,20 +96,18 @@ EOF
     mkdir --parents "$(dirname "$targetFilePath")"
     eval "$backupCommand"
     # Clean outdated daily backups.
-    find "$targetPath" -mtime +14 -type d -exec rm -rv {} \;
+    find "$targetPath" -mtime +"$numberOfDailyRetentionDays" -type d -exec "$cleanupCommand" {} \;
     # Clean outdated weekly backups.
-    find "$targetPath" -mtime +60 -type d -exec rm -rv {} \;
+    find "$targetPath" -mtime +"$numberOfWeeklyRetentionDays" -type d -exec "$cleanupCommand" {} \;
     # Clean outdated monthly backups.
-    find "$targetPath" -mtime +300 -type d -exec rm -rv {} \;
+    find "$targetPath" -mtime +"$numberOfMonthlyRetentionDays" -type d -exec "$cleanupCommand" {} \;
     # endregion
     return $?
 }
-# region footer
 if [[ "$0" == *"${__NAME__}.sh" ]]; then
     "$__NAME__" "$@"
     exit $?
 fi
-# endregion
 # region vim modline
 # vim: set tabstop=4 shiftwidth=4 expandtab:
 # vim: foldmethod=marker foldmarker=region,endregion:
