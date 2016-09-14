@@ -1,0 +1,6 @@
+[Unit]
+Description=Backup rotation logic.
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/backupRotation.sh
