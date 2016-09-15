@@ -4,7 +4,7 @@
     "documentationWebsite": {
         "name": "backupRotation",
         "tagline": "This script allows you to create a local or remote backup rotation for your files.",
-        "analyticsCode": "UA-40192634-13"
+        "trackingCode": "UA-40192634-13"
     },
     "scripts": {
         "updateDocumentation": "documentationWebsite --log-level info"
