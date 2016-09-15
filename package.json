@@ -13,5 +13,19 @@
     },
     "devDependencies": {
         "documentation-website": "latest"
-    }
+    },
+    "repository": {
+      "type": "git",
+      "url": "https://github.com/thaibault/backupRotation"
+    },
+  "keywords": [
+    "automatic",
+    "backup",
+    "rotation",
+    "replication",
+    "synchronisation"
+  ],
+  "homepage": "http://torben.website/backupRotation",
+
+  "license": "CC-BY-3.0"
 }
