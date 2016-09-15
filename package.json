@@ -6,6 +6,8 @@
         "tagline": "This script allows you to create a local or remote backup rotation for your files.",
         "trackingCode": "UA-40192634-13"
     },
+    "files": ["backupRotation.timer", "backupRotation.service"],
+    "main": "backupRotation.sh",
     "scripts": {
         "updateDocumentation": "documentationWebsite --log-level info"
     },
