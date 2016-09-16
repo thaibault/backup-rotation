@@ -21,7 +21,7 @@ source=('backupRotation.sh')
 md5sums=('SKIP')
 
 package() {
-    install -Dm755 backupRotation.sh "${pkgdir}/usr/bin/backupRotation"
+    install -D --mode 755 backupRotation.sh "${pkgdir}/usr/bin/backupRotation"
 }
 # region vim modline
 # vim: set tabstop=4 shiftwidth=4 expandtab:
