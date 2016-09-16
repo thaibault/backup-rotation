@@ -35,7 +35,7 @@ Features
 Usage
 -----
 
-Run this script daily to generate you configured backup file structure.
+Run this script daily to generate your configured backup file structure.
 
 ```sh
 ./backupRotation.sh
@@ -49,8 +49,8 @@ Simply edit the constants region of the provided shell script.
 Installation (under systemd)
 ----------------------------
 
-Copy the script file "backupRotation.sh" to "/usr/local/bin/" and copy the
-provided timer and service files (backupRotation.service and
+Copy the script file "backupRotation.sh" to "/usr/bin/backupRotation" and copy
+the provided timer and service files (backupRotation.service and
 backupRotation.timer) to "/etc/systemd/system/" and run
 
 ```sh
