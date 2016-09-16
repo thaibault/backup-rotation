@@ -13,15 +13,15 @@ pkgname=backupRotation
 pkgver=1.0
 pkgrel=1
 pkgdesc='This script allows you to create a local or remote backup rotation for your files.'
-arch=('x86_64')
-url="https://github.com/jandob/pac_manage"
-license=('WTFPL')
-depends=('pacman' 'yaourt' 'bash' 'sed')
-source=('pac_manage.sh')
+arch=('any')
+url='http://torben.website/backupRotation'
+license=('CC-BY-3.0')
+depends=('pacman' 'yaourt' 'rsync' 'findutils')
+source=('backupRotation.sh')
 md5sums=('SKIP')
 
 package() {
-    install -Dm755 pac_manage.sh "${pkgdir}/usr/bin/pac_manage"
+    install -Dm755 backupRotation.sh "${pkgdir}/usr/bin/backupRotation"
 }
 # region vim modline
 # vim: set tabstop=4 shiftwidth=4 expandtab:
