@@ -1,9 +1,9 @@
 {
     "name": "backup-rotation",
     "version": "1.0.0",
+    "description": "This script allows you to create a local or remote backup rotation for your files.",
     "documentationWebsite": {
         "name": "backupRotation",
-        "tagline": "This script allows you to create a local or remote backup rotation for your files.",
         "trackingCode": "UA-40192634-13"
     },
     "files": ["backupRotation.timer", "backupRotation.service"],
