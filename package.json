@@ -9,6 +9,7 @@
     "files": ["backupRotation.timer", "backupRotation.service"],
     "main": "backupRotation.sh",
     "scripts": {
+        "update": "npm version patch && npm publish && echo TODO PKGBUILD update",
         "updateDocumentation": "documentationWebsite --log-level info"
     },
     "devDependencies": {
