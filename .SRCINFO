@@ -1,4 +1,4 @@
-pkgbase = backupRotation
+pkgbase = backup-rotation
 	pkgdesc = This script allows you to create a local or remote backup rotation for your files.
 	pkgver = 1.0
 	pkgrel = 1
@@ -12,5 +12,5 @@ pkgbase = backupRotation
 	source = backupRotation.sh
 	md5sums = SKIP
 
-pkgname = backupRotation
+pkgname = backup-rotation
 
