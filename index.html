@@ -28,14 +28,17 @@
 <p>Run this script daily to generate your configured backup file structure.</p>
 <div class="codehilite"><pre><span></span>./backupRotation.sh
 </pre></div>
+<p>or after installation:</p>
+<div class="codehilite"><pre><span></span>backup-rotation
+</pre></div>
 <h2 id="configuration">Configuration</h2>
 <p>Simply edit the constants region of the provided shell script.</p>
 <h2 id="installation-under-systemd">Installation (under systemd)</h2>
-<p>Copy the script file "backupRotation.sh" to "/usr/bin/backupRotation" and copy the provided timer and service files (backupRotation.service and backupRotation.timer) to "/etc/systemd/system/" and run</p>
-<div class="codehilite"><pre><span></span>systemctl <span class="nb">enable</span> backupRotation.timer
+<p>Copy the script file "backupRotation.sh" to "/usr/bin/backup-rotation" and copy the provided timer and service files ("backupRotation.service" and "backupRotation.timer") to "/etc/systemd/system/backup-rotation.service" and "/etc/systemd/system/backup-rotation.timer" and run:</p>
+<div class="codehilite"><pre><span></span>systemctl <span class="nb">enable</span> backup-rotation.timer
 </pre></div>
 <p>to enable the backup logic. After running:</p>
-<div class="codehilite"><pre><span></span>systemctl start backupRotation.timer
+<div class="codehilite"><pre><span></span>systemctl start backup-rotation.timer
 </pre></div>
 <p>you can see the worker running in your system logs and observe generated backup files.</p>
 </div><div class="about-this-website inner"><h2 id="about-this-website">About this website<!--deDE:Impressum--><!--frFR:Mentions légales--></h2><p>Provider of<!--deDE:Anbieter von--><!--frFR:Fournisseur de--> <a href="http://torben.website/backupRotation">http://torben.website/backupRotation</a>:<br>Torben Sickert<br>Christoph-Mang-Str. 14<br>79100 Freiburg<br>Phone:<!--deDE:Tel.:--><!--frFR:Téléphone:--> <a href="tel:004917610248185">+49 (0) 176<span>/</span>10 248 185</a><br>Email:<!--deDE:E-Mail:--> <a href="mailto:info@torben.website">info@torben.website</a><br>Website: <!--deDE:Webseite:--><!--frFR:Site:--> <a href="http://torben.website">http://torben.website</a><br><span class="glyphicon glyphicon-arrow-left arrow-left-home tools-visible-on-javascript-enabled"></span><a class="tools-visible-on-javascript-enabled" href="#home">home<!--deDE:Startseite--><!--frFR:Maison--></a></p>
