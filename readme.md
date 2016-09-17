@@ -41,6 +41,12 @@ Run this script daily to generate your configured backup file structure.
 ./backupRotation.sh
 ```
 
+or after installation:
+
+```sh
+backup-rotation
+```
+
 Configuration
 -------------
 
@@ -49,18 +55,19 @@ Simply edit the constants region of the provided shell script.
 Installation (under systemd)
 ----------------------------
 
-Copy the script file "backupRotation.sh" to "/usr/bin/backupRotation" and copy
-the provided timer and service files (backupRotation.service and
-backupRotation.timer) to "/etc/systemd/system/" and run
+Copy the script file "backupRotation.sh" to "/usr/bin/backup-rotation" and copy
+the provided timer and service files ("backupRotation.service" and
+"backupRotation.timer") to "/etc/systemd/system/backup-rotation.service" and
+"/etc/systemd/system/backup-rotation.timer" and run:
 
 ```sh
-systemctl enable backupRotation.timer
+systemctl enable backup-rotation.timer
 ```
 
 to enable the backup logic. After running:
 
 ```sh
-systemctl start backupRotation.timer
+systemctl start backup-rotation.timer
 ```
 
 you can see the worker running in your system logs and observe generated backup
