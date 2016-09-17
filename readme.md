@@ -55,8 +55,8 @@ Simply edit the constants region of the provided shell script.
 Installation (under systemd)
 ----------------------------
 
-Copy the script file "backupRotation.sh" to "/usr/bin/backup-rotation" and copy
-the provided timer and service files ("backupRotation.service" and
+Copy the script file "backupRotation.sh" to "/usr/bin/backup-rotation" and the
+provided timer and service files ("backupRotation.service" and
 "backupRotation.timer") to "/etc/systemd/system/backup-rotation.service" and
 "/etc/systemd/system/backup-rotation.timer" and run:
 
