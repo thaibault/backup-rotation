@@ -33,7 +33,6 @@
 # Description:       see above
 ### END INIT INFO
 # endregion
-# Provides the main module scope.
 # region constants
 sourcePath='/tmp/source/'
 targetPath='/tmp/backup/'
@@ -61,7 +60,7 @@ weekDayNumber="$(date +'%u')"
 if [ ! -d "$sourcePath" ]; then
     date="$(date)"
     message="Source files on \"$sourcePath\" should be backed up but aren't available."
-    if [[ "$eMailAddress" != '' ]]; then
+    if hash msmtp && [[ "$eMailAddress" != '' ]]; then
         msmtp -t <<EOF
 From: $eMailAddress
 To: $eMailAddress
