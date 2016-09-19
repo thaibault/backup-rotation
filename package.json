@@ -10,7 +10,8 @@
     "main": "backupRotation.sh",
     "scripts": {
         "update": "npm version patch && npm publish",
-        "updateDocumentation": "documentationWebsite --log-level info"
+        "updateDocumentation": "documentationWebsite --log-level info",
+        "lint": "shellcheck backupRotation.sh"
     },
     "devDependencies": {
         "documentation-website": "latest"
