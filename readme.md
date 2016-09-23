@@ -47,18 +47,23 @@ or after installation:
 backup-rotation
 ```
 
-Configuration
--------------
+Installation with yourt from the arch user repository
+-----------------------------------------------------
 
-Simply edit the constants region of the provided shell script.
+```sh
+yaourt --sync backupRotation
+```
 
-Installation (under systemd)
-----------------------------
+Manual installation on any posix compatible operating system
+------------------------------------------------------------
 
 Copy the script file "backupRotation.sh" to "/usr/bin/backup-rotation" and the
 provided timer and service files ("backupRotation.service" and
 "backupRotation.timer") to "/etc/systemd/system/backup-rotation.service" and
-"/etc/systemd/system/backup-rotation.timer" and run:
+"/etc/systemd/system/backup-rotation.timer" and enable services:
+
+Enable service under systemd
+----------------------------
 
 ```sh
 systemctl enable backup-rotation.timer
@@ -72,6 +77,12 @@ systemctl start backup-rotation.timer
 
 you can see the worker running in your system logs and observe generated backup
 files.
+
+Configuration
+-------------
+
+Simply create a text file under "/etc/backupRotation" and insert bash code
+which sets all options you want to overwrite.
 
 <!-- region vim modline
 vim: set tabstop=4 shiftwidth=4 expandtab:
