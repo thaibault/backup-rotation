@@ -1,25 +1,13 @@
 {
-    "name": "backup-rotation",
-    "version": "1.0.0",
-    "description": "This script allows you to create a local or remote backup rotation for your files.",
-    "documentationWebsite": {
-        "name": "backupRotation",
-        "trackingCode": "UA-40192634-13"
-    },
-    "files": ["backupRotation.timer", "backupRotation.service"],
-    "main": "backupRotation.sh",
-    "scripts": {
-        "update": "npm version patch && npm publish",
-        "updateDocumentation": "documentationWebsite --log-level info",
-        "lint": "shellcheck backupRotation.sh"
-    },
-    "devDependencies": {
-        "documentation-website": "latest"
-    },
-    "repository": {
-      "type": "git",
-      "url": "https://github.com/thaibault/backupRotation"
-    },
+  "name": "backup-rotation",
+  "version": "1.0.0",
+  "license": "CC-BY-3.0",
+  "description": "This script allows you to create a local or remote backup rotation for your files.",
+  "homepage": "http://torben.website/backupRotation",
+  "documentationWebsite": {
+    "name": "backupRotation",
+    "trackingCode": "UA-40192634-13"
+  },
   "keywords": [
     "automatic",
     "backup",
@@ -27,7 +15,21 @@
     "replication",
     "synchronisation"
   ],
-  "homepage": "http://torben.website/backupRotation",
-
-  "license": "CC-BY-3.0"
+  "files": [
+    "backupRotation.timer",
+    "backupRotation.service"
+  ],
+  "main": "backupRotation.sh",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/thaibault/backupRotation"
+  },
+  "scripts": {
+    "update": "npm version patch && npm publish",
+    "updateDocumentation": "documentationWebsite --log-level info",
+    "lint": "shellcheck backupRotation.sh"
+  },
+  "devDependencies": {
+    "documentation-website": "latest"
+  }
 }
