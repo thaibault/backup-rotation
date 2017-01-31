@@ -45,7 +45,7 @@
 
 # account        default : gmail
 # endregion
-# region default options 
+# region default options
 # Example:
 # declare -A source_target_mappings=(
 #     ['SOURCE_URL1']='TARGET_URL1 RECIPIENT_E_MAIL_ADDRESS' \
@@ -57,17 +57,22 @@ daily_target_path='daily/'
 weekly_target_path='weekly/'
 monthly_target_path='monthly/'
 target_daily_file_name="$(date +'%d-%m-%Y')"
-target_weekly_file_name="$(date +'%V sav. %m-%Y')"
-target_monthly_file_name="$(date +'%m-%Y')"
-backup_week_day_number=6 # Saturday
+target_weekly_file_name="$(date +'%V.week-')${target_daily_file_name}"
+target_monthly_file_name="$target_daily_file_name"
+# Should be in range 1 till 28
 backup_month_day_number=1
+# Should be in range 1 till 7
+backup_week_day_number=6 # Saturday
 number_of_daily_retention_days=14 # Daily backups for the last 14 days.
 number_of_weekly_retention_days=56 # Weekly backups for the last 2 month.
 number_of_monthly_retention_days=365 # Monthly backups for the last year.
-backup_command='rsync --recursive --delete --perms --executability --owner --group --times --devices --specials --acls --links --super --whole-file --force --protect-args --hard-links --max-delete=1 --progress --human-readable --itemize-changes --verbose "$source_path" "$target_file_path" && tar --dereference --create --verbose --gzip --file "${target_file_path}.tar.gz" "$target_file_path" && rm --recursive --verbose "$target_file_path"'
+target_file_extension='.tar.gz'
+backup_command='rsync --recursive --delete --perms --executability --owner --group --times --devices --specials --acls --links --super --whole-file --force --protect-args --hard-links --max-delete=1 --progress --human-readable --itemize-changes --verbose --exclude=.git --exclude=.npm --exclude=node_modules --exclude=.local "$source_path" "$target_file_path" && tar --create --verbose --gzip --file "${target_file_path}${target_file_extension}" "$target_file_path" && rm --recursive --verbose "$target_file_path"'
+post_backup_command=''
 # Folder to delete is the last command line argument.
 cleanup_command='rm --recursive --verbose'
 verbose=false
+monitoring_url=''
 name='NODE_NAME'
 # endregion
 # region load options if present
@@ -77,17 +82,25 @@ fi
 # endregion
 # region controller
 # Get current month and week day number
-month_day_number="$(date +'%d')"
-week_day_umber="$(date +'%u')"
+month_day_number="$(date +'%d' | grep '[1-9][0-9]?' --only-matching \
+    --extended-regexp)"
+week_day_number="$(date +'%u')"
 for source_path in "${!source_target_mappings[@]}"; do
     target_path="$(echo "${source_target_mappings[$source_path]}" | \
         grep '^[^ ]+' --only-matching --extended-regexp)"
+    target_file_path="${target_path}/${daily_target_path}${target_daily_file_name}"
     if [[ "$month_day_number" == "$backup_month_day_number" ]]; then
-        target_file_path="${target_path}/${daily_target_path}${target_daily_file_name}"
-    elif [[ "$week_day_number" == "$backup_monthe_day_number" ]]; then
-        target_file_path="${target_path}/${daily_target_path}${target_daily_file_name}"
-    else
-        target_file_path="${target_path}/${daily_target_path}${target_daily_file_name}"
+        target_file_path="${target_path}/${monthly_target_path}${target_monthly_file_name}"
+        ln --symbolic --force "${target_file_path}${target_file_extension}" \
+            "${target_path}/${daily_target_path}${target_daily_file_name}${target_file_extension}"
+        if [[ "$week_day_number" == "$backup_week_day_number" ]]; then
+            ln --symbolic --force "${target_file_path}${target_file_extension}" \
+                "${target_path}/${weekly_target_path}${target_weekly_file_name}${target_file_extension}"
+        fi
+    elif [[ "$week_day_number" == "$backup_week_day_number" ]]; then
+        target_file_path="${target_path}/${weekly_target_path}${target_weekly_file_name}"
+        ln --symbolic --force "${target_file_path}${target_file_extension}" \
+            "${target_path}/${daily_target_path}${target_daily_file_name}${target_file_extension}"
     fi
     mkdir --parents "$(dirname "$target_file_path")"
     if $verbose; then
@@ -95,35 +108,107 @@ for source_path in "${!source_target_mappings[@]}"; do
     else
         backup_command+="${backup_command} &>/dev/null"
     fi
+    successful=false
     if eval "$backup_command"; then
         # Clean outdated daily backups.
-        find "$target_path" -mtime +"$number_of_daily_retention_days" -type d \
-            -exec "$cleanup_command" {} \;
+        [ -d "${target_path}/${daily_target_path}" ] && \
+            find "${target_path}/${daily_target_path}" -mtime \
+                +"$number_of_daily_retention_days" -exec $cleanup_command {} \;
         # Clean outdated weekly backups.
-        find "$target_path" -mtime +"$number_of_weekly_retention_days" \
-            -type d -exec "$cleanup_command" {} \;
+        [ -d "${target_path}/${weekly_target_path}" ] && \
+            find "${target_path}/${weekly_target_path}" -mtime \
+                +"$number_of_weekly_retention_days" -exec $cleanup_command \
+                {} \;
         # Clean outdated monthly backups.
-        find "$target_path" -mtime +"$number_of_monthly_retention_days" \
-            -type d -exec "$cleanup_command" {} \;
-    else
-        message="Source files in \"$source_path\" should be backed up but aren't available."
-        $verbose && echo "$message" &>/dev/stderr
+        [ -d "${target_path}/${monthly_target_path}" ] && \
+            find "${target_path}/${monthly_target_path}" -mtime \
+                +"$number_of_monthly_retention_days" -exec $cleanup_command \
+                {} \;
+        [[ "$post_backup_command" == '' ]] || eval "$post_backup_command" && \
+            successful=true
+        if $successful; then
+            message="Source files in \"$source_path\" from node \"$name\" successfully backed up to \"${target_file_path}${target_file_extension}\".\n\nCurrent Backup structure:\n"
+            $verbose && echo -e "$message" && tree "$target_path" && \
+                df ./ --human-readable
+            if hash msmtp && [[ "$sender_e_mail_address" != '' ]]; then
+                for e_mail_address in \
+                    $(echo "${source_target_mappings[$source_path]}" | \
+                    grep ' .+$' --only-matching --extended-regexp)
+                do
+                    msmtp --read-recipients <<EOF
+MIME-Version: 1.0
+Content-Type: text/html
+From: $sender_e_mail_address
+To: $e_mail_address
+Reply-To: $replier_e_mail_address
+Date: $(date)
+Subject: Backup was successful
+
+<!doctype html>
+<html>
+<head>
+</head>
+<body>
+    <p>$(echo -e $message | sed --regexp-extended 's/"([^"]+)"/"<span style="font-weight:bold">\1<\/span>"/g')</p>
+    <p>
+        <pre>
+$(tree "$target_path" | sed 's/</\&lt;/g' | sed 's/>/\&gt;/g' | sed "0,/${target_daily_file_name}${target_file_extension}/s/${target_daily_file_name}${target_file_extension}/<span style="font-weight:bold">${target_daily_file_name}${target_file_extension}<\\/span>/" | sed "s/${target_weekly_file_name}${target_file_extension}/<span style="font-weight:bold">${target_weekly_file_name}${target_file_extension}<\\/span>/" | sed "s/${target_monthly_file_name}${target_file_extension}/<span style="font-weight:bold">${target_monthly_file_name}${target_file_extension}<\\/span>/")
+        </pre>
+    </p>
+    <p><pre>$(df ./ --human-readable)</pre></p>
+</body>
+</html>
+
+EOF
+                done
+            fi
+            if [[ "$monitoring_url" != '' ]]; then
+                curl --request PUT --header 'Content-Type: application/json' \
+                    --data "{\"source\": \"$source_path\", \"target\": \"$target_path\", \"error\": false}" \
+                    "$monitoring_url"
+            fi
+        fi
+    fi
+    if ! $successful; then
+        message="Source files in \"$source_path\" from node \"$name\" should be backed up but has failed.\n\nCurrent Backup structure:\n"
+        $verbose && echo -e "$message" &>/dev/stderr && \
+            tree "$target_path" && df ./ --human-readable
         if hash msmtp && [[ "$sender_e_mail_address" != '' ]]; then
             for e_mail_address in \
                 $(echo "${source_target_mappings[$source_path]}" | \
                 grep ' .+$' --only-matching --extended-regexp)
             do
-                msmtp -t <<EOF
+                msmtp --read-recipients <<EOF
+MIME-Version: 1.0
+Content-Type: text/html
 From: $sender_e_mail_address
 To: $e_mail_address
 Reply-To: $replier_e_mail_address
 Date: $(date)
-Subject: Source files doesn't exist.
+Subject: Backup has failed
 
-$message
+<!doctype html>
+<html>
+<head>
+</head>
+<body>
+    <p>$(echo -e $message | sed --regexp-extended 's/"([^"]+)"/"<span style="font-weight:bold">\1<\/span>"/g' | sed --regexp-extended 's/(failed)/<span style="font-weight:bold">\1<\/span>/g')</p>
+    <p>
+        <pre>
+$(tree "$target_path" | sed 's/</\&lt;/g' | sed 's/>/\&gt;/g' | sed "0,/${target_daily_file_name}${target_file_extension}/s/${target_daily_file_name}${target_file_extension}/<span style="font-weight:bold">${target_daily_file_name}${target_file_extension}<\\/span>/" | sed "s/${target_weekly_file_name}${target_file_extension}/<span style="font-weight:bold">${target_weekly_file_name}${target_file_extension}<\\/span>/" | sed "s/${target_monthly_file_name}${target_file_extension}/<span style="font-weight:bold">${target_monthly_file_name}${target_file_extension}<\\/span>/")
+        </pre>
+    </p>
+    <p><pre>$(df ./ --human-readable)</pre></p>
+</body>
+</html>
 
 EOF
             done
+            if [[ "$monitoring_url" != '' ]]; then
+                curl --request PUT --header 'Content-Type: application/json' \
+                    --data "{\"source\": \"$source_path\", \"target\": \"$target_path\", \"error\": true}" \
+                    "$monitoring_url"
+            fi
         fi
         exit 1
     fi
