@@ -25,9 +25,9 @@
     "url": "https://github.com/thaibault/backupRotation"
   },
   "scripts": {
+    "lint": "shellcheck backupRotation.sh",
     "update": "npm version patch && npm publish",
-    "updateDocumentation": "documentationWebsite --log-level info",
-    "lint": "shellcheck backupRotation.sh"
+    "update:documentation": "documentationWebsite --log-level info"
   },
   "devDependencies": {
     "documentation-website": "latest"
