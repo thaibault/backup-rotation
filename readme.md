@@ -13,6 +13,8 @@ This library written by Torben Sickert stand under a creative commons naming
 
 endregion -->
 
+[![Build Status](https://travis-ci.org/thaibault/backupRotation.svg?branch=master)](https://travis-ci.org/thaibault/backupRotation)
+
 Use case
 --------
 
