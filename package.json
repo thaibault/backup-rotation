@@ -25,7 +25,7 @@
     "url": "https://github.com/thaibault/backupRotation"
   },
   "scripts": {
-    "lint": "hash shellcheck && shellcheck backupRotation.sh || echo Please install \"shellcheck\". && true",
+    "lint": "hash shellcheck && shellcheck backupRotation.sh || echo Please install \"shellcheck\". || true",
     "test": "npm run lint && ./backupRotation.sh",
     "update": "npm version patch && npm publish",
     "update:documentation": "documentationWebsite --log-level info"
