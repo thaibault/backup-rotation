@@ -31,6 +31,6 @@
     "update:documentation": "documentationWebsite --log-level info"
   },
   "devDependencies": {
-    "documentation-website": "^1.0.62"
+    "documentation-website": "^1.0.82"
   }
 }
