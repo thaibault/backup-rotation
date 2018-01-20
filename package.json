@@ -20,17 +20,27 @@
     "backupRotation.service"
   ],
   "main": "backupRotation.sh",
+  "bin": {
+    "backupRotation": "backupRotation.sh"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/thaibault/backupRotation"
   },
   "scripts": {
-    "lint": "hash shellcheck && shellcheck backupRotation.sh || echo Please install \"shellcheck\". || true",
-    "test": "npm run lint && ./backupRotation.sh",
+    "clear": "rm --recursive apiDocumentation &>/dev/null || true",
+    "document": "mkdir --parents apiDocumentation/backupRotation/latest && bashlink-document backupRotation 1>apiDocumentation/backupRotation/latest/index.html",
+    "document:show": "bashlink-document backupRotation",
+    "document:show:error": "bashlink-document backupRotation 1>/dev/null",
+    "lint": "hash shellcheck && shellcheck -x *.sh || echo Please install \"shellcheck\". || true",
+    "lint:given": "shellcheck -x",
+    "test": "bashlink-doctest --verbose backupRotation",
     "update": "npm version patch && npm publish",
     "update:documentation": "documentationWebsite --log-level info"
   },
   "devDependencies": {
-    "documentation-website": "^1.0.89"
+    "documentation-website": "^1.0.89",
+    "shellcheck": "0.0.8",
+    "bashlink": "^1.0.18"
   }
 }
