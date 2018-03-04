@@ -20,9 +20,6 @@ elif [ -f "/usr/lib/bashlink/module.sh" ]; then
 else
     backupRotation_bashlink_path="$(mktemp --directory --suffix -backup-rotation-bashlink)/bashlink/"
     mkdir "$backupRotation_bashlink_path"
-    echo wget \
-        https://goo.gl/UKF5JG \
-        --output-document "${backupRotation_bashlink_path}module.sh"
     if wget \
         https://goo.gl/UKF5JG \
         --output-document "${backupRotation_bashlink_path}module.sh"
@@ -249,9 +246,11 @@ EOF
         if ! $successful; then
             local message="Source files in \"$source_path\" from node \"$backupRotation_name\" should be backed up but has failed."$'\n\nCurrent Backup structure:\n'
             $backupRotation_verbose && \
-                echo -e "$message" &>/dev/stderr && \
-                    tree -h -t "$target_path" && \
-                        df ./ --human-readable
+            if bl.logging.is_enabled info; then
+                bl.logging.info "$message"
+                tree -h -t "$target_path"
+                df ./ --human-readable
+            fi
             if hash msmtp && [[ "$backupRotation_sender_e_mail_address" != '' ]]; then
                 local e_mail_address
                 for e_mail_address in \
