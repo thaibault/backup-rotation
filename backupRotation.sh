@@ -10,7 +10,7 @@
 # 3.0 unported license. see http://creativecommons.org/licenses/by/3.0/deed.de
 # endregion
 # shellcheck disable=SC1004,SC2016,SC2034,SC2155
-# region import
+# region i mport
 if [ -f "$(dirname "${BASH_SOURCE[0]}")/node_modules/bashlink/module.sh" ]; then
     # shellcheck disable=SC1090
     source "$(dirname "${BASH_SOURCE[0]}")/node_modules/bashlink/module.sh"
@@ -32,7 +32,7 @@ else
         source "${backupRotation_bashlink_path}/module.sh"
     else
         echo Needed bashlink library not found 1>&2
-        #rm --force --recursive "$backupRotation_bashlink_path"
+        rm --force --recursive "$backupRotation_bashlink_path"
         exit 1
     fi
 fi
@@ -121,7 +121,7 @@ backupRotation_name=NODE_NAME
 ## endregion
 ## region load options if present
 if [ -f /etc/backupRotation ]; then
-    bl.module.import /etc/backupRotation
+    source /etc/backupRotation
 fi
 ## endregion
 # endregion
