@@ -118,6 +118,7 @@ backupRotation_name=NODE_NAME
 ## endregion
 ## region load options if present
 if [ -f /etc/backupRotation ]; then
+    # shellcheck disable=SC1091
     source /etc/backupRotation
 fi
 ## endregion
@@ -126,7 +127,11 @@ fi
 ## region controller
 alias backupRotation.main=backupRotation_main
 backupRotation_main() {
-    # Get current month and week day number
+    local __documentation__='
+        Get current month and week day number
+    '
+    $backupRotation_verbose && \
+        bl.logging.set_level info
     local month_day_number="$(
         date +'%d' | grep '[1-9][0-9]?' --only-matching --extended-regexp)"
     local week_day_number="$(date +'%u')"
