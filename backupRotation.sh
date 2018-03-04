@@ -311,7 +311,21 @@ EOF
 # endregion
 if bl.tools.is_main; then
     bl.exception.activate
-    backupRotation.main "$@"
+    bl.exception.try {
+        backupRotation.main "$@"
+    } bl.exception.catch {
+        [ -d "$archInstall_bashlink_path" ] && \
+            rm --recursive "$archInstall_bashlink_path"
+        # shellcheck disable=SC2154
+        [ -d "$bl_module_remote_module_cache_path" ] && \
+            rm --recursive "$bl_module_remote_module_cache_path"
+        bl.logging.error "$bl_exception_last_traceback"
+    }
+    [ -d "$archInstall_bashlink_path" ] && \
+        rm --recursive "$archInstall_bashlink_path"
+    # shellcheck disable=SC2154
+    [ -d "$bl_module_remote_module_cache_path" ] && \
+        rm --recursive "$bl_module_remote_module_cache_path"
 fi
 # region vim modline
 # vim: set tabstop=4 shiftwidth=4 expandtab:
