@@ -9,20 +9,34 @@
 # This library written by Torben Sickert stand under a creative commons naming
 # 3.0 unported license. see http://creativecommons.org/licenses/by/3.0/deed.de
 # endregion
-# shellcheck disable=SC1004,SC2016,SC2155
+# shellcheck disable=SC1004,SC2016,SC2034,SC2155
 # region import
-if [[ -f "$(dirname "${BASH_SOURCE[0]}")node_modules/bashlink/module.sh" ]]; then
+if [ -f "$(dirname "${BASH_SOURCE[0]}")/node_modules/bashlink/module.sh" ]; then
     # shellcheck disable=SC1090
-    source "$(dirname "${BASH_SOURCE[0]}")node_modules/bashlink/module.sh"
-elif [[ -f "/usr/lib/bashlink/module.sh" ]]; then
+    source "$(dirname "${BASH_SOURCE[0]}")/node_modules/bashlink/module.sh"
+elif [ -f "/usr/lib/bashlink/module.sh" ]; then
     # shellcheck disable=SC1091
     source "/usr/lib/bashlink/module.sh"
+else
+    archInstall_bashlink_path="$(mktemp --directory --suffix -bashlink)/bashlink/"
+    if wget \
+        https://goo.gl/UKF5JG \
+        --output-document "${archInstall_bashlink_path}module.sh" \
+        --quiet
+    then
+        bl_module_retrieve_remote_modules=true
+        # shellcheck disable=SC1090
+        source "${archInstall_bashlink_path}/module.sh"
+    else
+        echo Needed bashlink library not found 1>&2
+        exit 1
+    fi
 fi
+bl.module.import bashlink.exception
 bl.module.import bashlink.logging
 bl.module.import bashlink.tools
 # endregion
 # region variables
-# shellcheck disable=SC2034
 backupRotation__dependencies__=(
     bash
     date
@@ -30,7 +44,6 @@ backupRotation__dependencies__=(
     msmtp
     test
 )
-# shellcheck disable=SC2034,SC2016
 backupRotation__documentation__='
     This module provides generic service handling for each program supporting
     standard process signals. In general you only have to replace the string
@@ -76,13 +89,13 @@ backupRotation__documentation__='
 declare -A backupRotation_source_target_mappings=()
 # Disables by e-mail sending if empty.
 backupRotation_sender_e_mail_address=''
-backupRotation_replier_e_mail_address="$sender_e_mail_address"
+backupRotation_replier_e_mail_address="$backupRotation_sender_e_mail_address"
 backupRotation_daily_target_path=daily/
 backupRotation_weekly_target_path=weekly/
 backupRotation_monthly_target_path=monthly/
 backupRotation_target_daily_file_name="$(date +'%d-%m-%Y')"
-backupRotation_target_weekly_file_name="$(date +'%V.week-')${target_daily_file_name}"
-backupRotation_target_monthly_file_name="$target_daily_file_name"
+backupRotation_target_weekly_file_name="$(date +'%V.week-')${backupRotation_target_daily_file_name}"
+backupRotation_target_monthly_file_name="$backupRotation_target_daily_file_name"
 # Should be in range 1 till 28
 backupRotation_month_day_number=1
 # Should be in range 1 till 7
@@ -156,27 +169,28 @@ backupRotation_main() {
             [ -d "${target_path}/${backupRotation_daily_target_path}" ] && \
                 find \
                     "${target_path}/${backupRotation_daily_target_path}" \
-                    -mtime +"$backupRotatio_number_of_daily_retention_days" \
-                    -exec $backupRotation_cleanup_command {} \;
+                    -mtime +"$backupRotation_number_of_daily_retention_days" \
+                    -exec "${backupRotation_cleanup_command[*]}" {} \;
             # Clean outdated weekly backups.
             if [ -d "${target_path}/${backupRotation_weekly_target_path}" ]; then
                 find \
                     "${target_path}/${backupRotation_weekly_target_path}" \
-                    -mtime +"$backupRotatio_number_of_weekly_retention_days" \
-                    -exec $backupRotation_cleanup_command {} \;
+                    -mtime +"$backupRotation_number_of_weekly_retention_days" \
+                    -exec "${backupRotation_cleanup_command[*]}" {} \;
             fi
             # Clean outdated monthly backups.
             if [ -d "${target_path}/${backupRotation_monthly_target_path}" ]; then
                 find \
                     "${target_path}/${backupRotation_monthly_target_path}" \
-                    -mtime +"$backupRotatio_number_of_monthly_retention_days" \
-                    -exec $backupRotation_cleanup_command {} \;
+                    -mtime +"$backupRotation_number_of_monthly_retention_days" \
+                    -exec "${backupRotation_cleanup_command[*]}" {} \;
             fi
             [ "$backupRotation_post_run_command" = '' ] || \
                 eval "$backupRotation_post_run_command" && \
                 successful=true
             if $successful; then
-                local message="Source files in \"$source_path\" from node \"$name\" successfully backed up to \"${target_file_path}${backupRotation_target_file_extension}\".\n\nCurrent Backup structure:\n"
+                # shellcheck disable=SC2089
+                local message="Source files in \"$source_path\" from node \"$backupRotation_name\" successfully backed up to \"${target_file_path}${backupRotation_target_file_extension}\"."$'\n\nCurrent Backup structure:\n'
                 $backupRotation_verbose && \
                     echo -e "$message" && \
                         tree -h -t "$target_path" && \
@@ -190,7 +204,7 @@ backupRotation_main() {
 MIME-Version: 1.0
 Content-Type: text/html
 From: $backupRotation_sender_e_mail_address
-To: $backupRotation_e_mail_address
+To: $e_mail_address
 Reply-To: $backupRotation_replier_e_mail_address
 Date: $(date)
 Subject: Backup was successful
@@ -201,7 +215,7 @@ Subject: Backup was successful
 </head>
 <body>
     <p>$(
-        echo -e $message | \
+        echo -e "$message" | \
             sed --regexp-extended 's/"([^"]+)"/"<span style="font-weight:bold">\1<\/span>"/g'
     )</p>
     <p>
@@ -210,9 +224,9 @@ $(
     tree -h -t "$target_path" | \
         sed 's/</\&lt;/g' | \
             sed 's/>/\&gt;/g' | \
-                sed "0,/${backupRotation_target_daily_file_name}${backupRotation_target_file_extension}/s/${backupRotation_target_daily_file_name}${backupRotation_target_file_extension}/<span style="font-weight:bold">${backupRotation_target_daily_file_name}${backupRotation_target_file_extension}<\\/span>/" | \
-                    sed "s/${backupRotation_target_weekly_file_name}${backupRotation_target_file_extension}/<span style="font-weight:bold">${backupRotation_target_weekly_file_name}${backupRotation_target_file_extension}<\\/span>/" | \
-                        sed "s/${backupRotation_target_monthly_file_name}${backupRotation_target_file_extension}/<span style="font-weight:bold">${backupRotation_target_monthly_file_name}${backupRotation_target_file_extension}<\\/span>/"
+                sed "0,/${backupRotation_target_daily_file_name}${backupRotation_target_file_extension}/s/${backupRotation_target_daily_file_name}${backupRotation_target_file_extension}/<span style=\"font-weight:bold\">${backupRotation_target_daily_file_name}${backupRotation_target_file_extension}<\\/span>/" | \
+                    sed "s/${backupRotation_target_weekly_file_name}${backupRotation_target_file_extension}/<span style=\"font-weight:bold\">${backupRotation_target_weekly_file_name}${backupRotation_target_file_extension}<\\/span>/" | \
+                        sed "s/${backupRotation_target_monthly_file_name}${backupRotation_target_file_extension}/<span style=\"font-weight:bold\">${backupRotation_target_monthly_file_name}${backupRotation_target_file_extension}<\\/span>/"
 )
         </pre>
     </p>
@@ -233,7 +247,7 @@ EOF
             fi
         fi
         if ! $successful; then
-            local message="Source files in \"$source_path\" from node \"$backupRotation_name\" should be backed up but has failed.\n\nCurrent Backup structure:\n"
+            local message="Source files in \"$source_path\" from node \"$backupRotation_name\" should be backed up but has failed."$'\n\nCurrent Backup structure:\n'
             $backupRotation_verbose && \
                 echo -e "$message" &>/dev/stderr && \
                     tree -h -t "$target_path" && \
@@ -248,7 +262,7 @@ EOF
 MIME-Version: 1.0
 Content-Type: text/html
 From: $backupRotation_sender_e_mail_address
-To: $backupRotation_e_mail_address
+To: $e_mail_address
 Reply-To: $backupRotation_replier_e_mail_address
 Date: $(date)
 Subject: Backup has failed
@@ -259,7 +273,7 @@ Subject: Backup has failed
 </head>
 <body>
     <p>$(
-        echo -e $message | \
+        echo -e "$message" | \
             sed --regexp-extended 's/"([^"]+)"/"<span style="font-weight:bold">\1<\/span>"/g' | \
                 sed --regexp-extended 's/(failed)/<span style="font-weight:bold">\1<\/span>/g'
     )</p>
@@ -269,9 +283,9 @@ $(
     tree -h -t "$target_path" | \
         sed 's/</\&lt;/g' | \
             sed 's/>/\&gt;/g' | \
-                sed "0,/${backupRotation_target_daily_file_name}${backupRotation_target_file_extension}/s/${backupRotation_target_daily_file_name}${backupRotation_target_file_extension}/<span style="font-weight:bold">${backupRotation_target_daily_file_name}${backupRotation_target_file_extension}<\\/span>/" | \
-                    sed "s/${backupRotation_target_weekly_file_name}${backupRotation_target_file_extension}/<span style="font-weight:bold">${backupRotation_target_weekly_file_name}${backupRotation_target_file_extension}<\\/span>/" | \
-                        sed "s/${backupRotation_target_monthly_file_name}${backupRotation_target_file_extension}/<span style="font-weight:bold">${backupRotation_target_monthly_file_name}${backupRotation_target_file_extension}<\\/span>/"
+                sed "0,/${backupRotation_target_daily_file_name}${backupRotation_target_file_extension}/s/${backupRotation_target_daily_file_name}${backupRotation_target_file_extension}/<span style=\"font-weight:bold\">${backupRotation_target_daily_file_name}${backupRotation_target_file_extension}<\\/span>/" | \
+                    sed "s/${backupRotation_target_weekly_file_name}${backupRotation_target_file_extension}/<span style=\"font-weight:bold\">${backupRotation_target_weekly_file_name}${backupRotation_target_file_extension}<\\/span>/" | \
+                        sed "s/${backupRotation_target_monthly_file_name}${backupRotation_target_file_extension}/<span style=\"font-weight:bold\">${backupRotation_target_monthly_file_name}${backupRotation_target_file_extension}<\\/span>/"
 )
         </pre>
     </p>
@@ -296,6 +310,7 @@ EOF
 ## endregion
 # endregion
 if bl.tools.is_main; then
+    bl.exception.activate
     backupRotation.main "$@"
 fi
 # region vim modline
