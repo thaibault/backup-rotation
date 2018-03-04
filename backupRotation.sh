@@ -10,7 +10,7 @@
 # 3.0 unported license. see http://creativecommons.org/licenses/by/3.0/deed.de
 # endregion
 # shellcheck disable=SC1004,SC2016,SC2034,SC2155
-# region i mport
+# region import
 if [ -f "$(dirname "${BASH_SOURCE[0]}")/node_modules/bashlink/module.sh" ]; then
     # shellcheck disable=SC1090
     source "$(dirname "${BASH_SOURCE[0]}")/node_modules/bashlink/module.sh"
@@ -195,6 +195,7 @@ backupRotation_main() {
                         tree -h -t "$target_path" && \
                             df ./ --human-readable
                 if hash msmtp && [[ "$backupRotation_sender_e_mail_address" != '' ]]; then
+                    local e_mail_address
                     for e_mail_address in \
                         $(echo "${backupRotation_source_target_mappings[$source_path]}" | \
                         grep ' .+$' --only-matching --extended-regexp)
