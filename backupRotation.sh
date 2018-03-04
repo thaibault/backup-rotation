@@ -170,24 +170,19 @@ backupRotation_main() {
         local successful=false
         if eval "$backupRotation_command"; then
             # Clean outdated daily backups.
-            [ -d "${target_path}/${backupRotation_daily_target_path}" ] && \
-                find \
-                    "${target_path}/${backupRotation_daily_target_path}" \
-                    -mtime +"$backupRotation_number_of_daily_retention_days" \
-                    -exec "${backupRotation_cleanup_command[*]}" {} \;
+            if [ -d "${target_path}/${backupRotation_daily_target_path}" ]; then
+                # shellcheck disable=SC2086
+                find "${target_path}/${backupRotation_daily_target_path}" -mtime +"$backupRotation_number_of_daily_retention_days" -exec $backupRotation_cleanup_command {} \;
+            fi
             # Clean outdated weekly backups.
             if [ -d "${target_path}/${backupRotation_weekly_target_path}" ]; then
-                find \
-                    "${target_path}/${backupRotation_weekly_target_path}" \
-                    -mtime +"$backupRotation_number_of_weekly_retention_days" \
-                    -exec "${backupRotation_cleanup_command[*]}" {} \;
+                # shellcheck disable=SC2086
+                find "${target_path}/${backupRotation_weekly_target_path}" -mtime +"$backupRotation_number_of_weekly_retention_days" -exec $backupRotation_cleanup_command {} \;
             fi
             # Clean outdated monthly backups.
             if [ -d "${target_path}/${backupRotation_monthly_target_path}" ]; then
-                find \
-                    "${target_path}/${backupRotation_monthly_target_path}" \
-                    -mtime +"$backupRotation_number_of_monthly_retention_days" \
-                    -exec "${backupRotation_cleanup_command[*]}" {} \;
+                # shellcheck disable=SC2086
+                find "${target_path}/${backupRotation_monthly_target_path}" -mtime +"$backupRotation_number_of_monthly_retention_days" -exec $backupRotation_cleanup_command {} \;
             fi
             [ "$backupRotation_post_run_command" = '' ] || \
                 eval "$backupRotation_post_run_command" && \
@@ -315,14 +310,16 @@ EOF
 # endregion
 if bl.tools.is_main; then
     bl.exception.activate
-    bl.exception.try {
+    bl.exception.try
         backupRotation.main "$@"
-    } bl.exception.catch {
+    bl.exception.catch_single
+    {
         [ -d "$backupRotation_bashlink_path" ] && \
             rm --recursive "$backupRotation_bashlink_path"
         # shellcheck disable=SC2154
         [ -d "$bl_module_remote_module_cache_path" ] && \
             rm --recursive "$bl_module_remote_module_cache_path"
+        # shellcheck disable=SC2154
         bl.logging.error "$bl_exception_last_traceback"
     }
     [ -d "$backupRotation_bashlink_path" ] && \
