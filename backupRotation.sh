@@ -18,17 +18,21 @@ elif [ -f "/usr/lib/bashlink/module.sh" ]; then
     # shellcheck disable=SC1091
     source "/usr/lib/bashlink/module.sh"
 else
-    archInstall_bashlink_path="$(mktemp --directory --suffix -bashlink)/bashlink/"
+    backupRotation_bashlink_path="$(mktemp --directory --suffix -backup-rotation-bashlink)/bashlink/"
+    mkdir "$backupRotation_bashlink_path"
+    echo wget \
+        https://goo.gl/UKF5JG \
+        --output-document "${backupRotation_bashlink_path}module.sh"
     if wget \
         https://goo.gl/UKF5JG \
-        --output-document "${archInstall_bashlink_path}module.sh" \
-        --quiet
+        --output-document "${backupRotation_bashlink_path}module.sh"
     then
         bl_module_retrieve_remote_modules=true
         # shellcheck disable=SC1090
-        source "${archInstall_bashlink_path}/module.sh"
+        source "${backupRotation_bashlink_path}/module.sh"
     else
         echo Needed bashlink library not found 1>&2
+        #rm --force --recursive "$backupRotation_bashlink_path"
         exit 1
     fi
 fi
@@ -314,15 +318,15 @@ if bl.tools.is_main; then
     bl.exception.try {
         backupRotation.main "$@"
     } bl.exception.catch {
-        [ -d "$archInstall_bashlink_path" ] && \
-            rm --recursive "$archInstall_bashlink_path"
+        [ -d "$backupRotation_bashlink_path" ] && \
+            rm --recursive "$backupRotation_bashlink_path"
         # shellcheck disable=SC2154
         [ -d "$bl_module_remote_module_cache_path" ] && \
             rm --recursive "$bl_module_remote_module_cache_path"
         bl.logging.error "$bl_exception_last_traceback"
     }
-    [ -d "$archInstall_bashlink_path" ] && \
-        rm --recursive "$archInstall_bashlink_path"
+    [ -d "$backupRotation_bashlink_path" ] && \
+        rm --recursive "$backupRotation_bashlink_path"
     # shellcheck disable=SC2154
     [ -d "$bl_module_remote_module_cache_path" ] && \
         rm --recursive "$bl_module_remote_module_cache_path"
