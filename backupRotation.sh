@@ -108,7 +108,7 @@ backupRotation_number_of_weekly_retention_days=56
 # Creates monthly backups for the last year.
 backupRotation_number_of_monthly_retention_days=365
 backupRotation_target_file_extension=.tar.gz
-backupRotation_command='rsync --recursive --delete --perms --executability --owner --group --times --devices --specials --acls --links --super --whole-file --force --protect-args --hard-links --max-delete=1 --progress --human-readable --itemize-changes --verbose --exclude=.git --exclude=.npm --exclude=node_modules --exclude=.local "$source_path" "$target_file_path" && tar --create --verbose --gzip --file "${target_file_path}${target_file_extension}" "$target_file_path"; rm --recursive --verbose "$target_file_path"'
+backupRotation_command='rsync --recursive --delete --perms --executability --owner --group --times --devices --specials --acls --links --super --whole-file --force --protect-args --hard-links --max-delete=1 --progress --human-readable --itemize-changes --verbose --exclude=.git --exclude=.npm --exclude=node_modules --exclude=.local "$source_path" "$target_file_path" && tar --create --verbose --gzip --file "${target_file_path}${backupRotation_target_file_extension}" "$target_file_path"; rm --recursive --verbose "$target_file_path"'
 backupRotation_post_run_command=''
 # Folder to delete is the last command line argument.
 backupRotation_cleanup_command='rm --recursive --verbose'
