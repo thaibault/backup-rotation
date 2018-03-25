@@ -39,10 +39,10 @@
     "update:documentation": "documentationWebsite --log-level info"
   },
   "devDependencies": {
-    "documentation-website": "^1.0.116",
+    "documentation-website": "^1.0.119",
     "shellcheck": "0.0.8"
   },
   "dependencies": {
-    "bashlink": "^1.0.79"
+    "bashlink": "^1.0.95"
   }
 }
