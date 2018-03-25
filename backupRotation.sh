@@ -18,13 +18,15 @@ elif [ -f "/usr/lib/bashlink/module.sh" ]; then
     # shellcheck disable=SC1091
     source "/usr/lib/bashlink/module.sh"
 else
-    backupRotation_bashlink_path="$(mktemp --directory --suffix -backup-rotation-bashlink)/bashlink/"
+    declare -gr backupRotation_bashlink_path="$(
+        mktemp --directory --suffix -backup-rotation-bashlink
+    )/bashlink/"
     mkdir "$backupRotation_bashlink_path"
     if wget \
         https://goo.gl/UKF5JG \
         --output-document "${backupRotation_bashlink_path}module.sh"
     then
-        bl_module_retrieve_remote_modules=true
+        declare -gr bl_module_retrieve_remote_modules=true
         # shellcheck disable=SC1090
         source "${backupRotation_bashlink_path}/module.sh"
     else
