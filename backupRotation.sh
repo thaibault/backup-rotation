@@ -38,14 +38,7 @@ bl.module.import bashlink.logging
 bl.module.import bashlink.tools
 # endregion
 # region variables
-backupRotation__dependencies__=(
-    bash
-    date
-    find
-    msmtp
-    test
-)
-backupRotation__documentation__='
+declare -gr backupRotation__documentation__='
     This module provides generic service handling for each program supporting
     standard process signals. In general you only have to replace the string
     "generic" to you specific application name.
@@ -86,35 +79,43 @@ backupRotation__documentation__='
         )
     ```
 '
-## region default options
-declare -A backupRotation_source_target_mappings=()
+declare -agr backupRotation__dependencies__=(
+    bash
+    date
+    find
+    msmtp
+    test
+)
+## region de fault options
+declare -ag backupRotation_source_target_mappings=()
 # Disables by e-mail sending if empty.
-backupRotation_sender_e_mail_address=''
-backupRotation_replier_e_mail_address="$backupRotation_sender_e_mail_address"
-backupRotation_daily_target_path=daily/
-backupRotation_weekly_target_path=weekly/
-backupRotation_monthly_target_path=monthly/
-backupRotation_target_daily_file_name="$(date +'%d-%m-%Y')"
-backupRotation_target_weekly_file_name="$(date +'%V.week-')${backupRotation_target_daily_file_name}"
-backupRotation_target_monthly_file_name="$backupRotation_target_daily_file_name"
+declare -g backupRotation_sender_e_mail_address=''
+declare -g backupRotation_replier_e_mail_address="$backupRotation_sender_e_mail_address"
+declare -g backupRotation_daily_target_path=daily/
+declare -g backupRotation_weekly_target_path=weekly/
+declare -g backupRotation_monthly_target_path=monthly/
+declare -g backupRotation_target_daily_file_name="$(date +'%d-%m-%Y')"
+declare -g backupRotation_target_weekly_file_name="$(
+    date +'%V.week-')${backupRotation_target_daily_file_name}"
+declare -g backupRotation_target_monthly_file_name="$backupRotation_target_daily_file_name"
 # Should be in range 1 till 28
-backupRotation_month_day_number=1
+declare -gi backupRotation_month_day_number=1
 # Should be in range 1 till 7
-backupRotation_week_day_number=6 # Saturday
+declare -gi backupRotation_week_day_number=6 # Saturday
 # Creates daily backups for the last 14 days.
-backupRotation_number_of_daily_retention_days=14
+declare -gi backupRotation_number_of_daily_retention_days=14
 # Creates weekly backups for the last 2 month.
-backupRotation_number_of_weekly_retention_days=56
+declare -gi backupRotation_number_of_weekly_retention_days=56
 # Creates monthly backups for the last year.
-backupRotation_number_of_monthly_retention_days=365
-backupRotation_target_file_extension=.tar.gz
-backupRotation_command='rsync --recursive --delete --perms --executability --owner --group --times --devices --specials --acls --links --super --whole-file --force --protect-args --hard-links --max-delete=1 --progress --human-readable --itemize-changes --verbose --exclude=.git --exclude=.npm --exclude=node_modules --exclude=.local "$source_path" "$target_file_path" && tar --create --verbose --gzip --file "${target_file_path}${backupRotation_target_file_extension}" "$target_file_path"; rm --recursive --verbose "$target_file_path"'
-backupRotation_post_run_command=''
+declare -gi backupRotation_number_of_monthly_retention_days=365
+declare -g backupRotation_target_file_extension=.tar.gz
+declare -g backupRotation_command='rsync --recursive --delete --perms --executability --owner --group --times --devices --specials --acls --links --super --whole-file --force --protect-args --hard-links --max-delete=1 --progress --human-readable --itemize-changes --verbose --exclude=.git --exclude=.npm --exclude=node_modules --exclude=.local "$source_path" "$target_file_path" && tar --create --verbose --gzip --file "${target_file_path}${backupRotation_target_file_extension}" "$target_file_path"; rm --recursive --verbose "$target_file_path"'
+declare -g backupRotation_post_run_command=''
 # Folder to delete is the last command line argument.
-backupRotation_cleanup_command='rm --recursive --verbose'
-backupRotation_verbose=false
-backupRotation_monitoring_url=''
-backupRotation_name=NODE_NAME
+declare -g backupRotation_cleanup_command='rm --recursive --verbose'
+declare -g backupRotation_verbose=false
+declare -g backupRotation_monitoring_url=''
+declare -g backupRotation_name=NODE_NAME
 ## endregion
 ## region load options if present
 if [ -f /etc/backupRotation ]; then
@@ -127,14 +128,14 @@ fi
 ## region controller
 alias backupRotation.main=backupRotation_main
 backupRotation_main() {
-    local __documentation__='
+    local -r __documentation__='
         Get current month and week day number
     '
     $backupRotation_verbose && \
         bl.logging.set_level info
-    local month_day_number="$(
+    local -ir month_day_number="$(
         date +'%d' | grep '[1-9][0-9]?' --only-matching --extended-regexp)"
-    local week_day_number="$(date +'%u')"
+    local -ir week_day_number="$(date +'%u')"
     local source_path
     for source_path in "${!backupRotation_source_target_mappings[@]}"; do
         local target_path="$(
