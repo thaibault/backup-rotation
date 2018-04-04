@@ -89,7 +89,7 @@ declare -agr backupRotation__dependencies__=(
     test
 )
 ## region de fault options
-declare -ag backupRotation_source_target_mappings=()
+declare -Ag backupRotation_source_target_mappings=()
 # Disables by e-mail sending if empty.
 declare -g backupRotation_sender_e_mail_address=''
 declare -g backupRotation_replier_e_mail_address="$backupRotation_sender_e_mail_address"
