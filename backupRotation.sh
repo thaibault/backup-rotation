@@ -88,7 +88,7 @@ declare -agr backupRotation__dependencies__=(
     msmtp
     test
 )
-## region de fault options
+## region default options
 declare -Ag backupRotation_source_target_mappings=()
 # Disables by e-mail sending if empty.
 declare -g backupRotation_sender_e_mail_address=''
