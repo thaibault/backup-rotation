@@ -14,16 +14,16 @@
 if [ -f "$(dirname "${BASH_SOURCE[0]}")/node_modules/bashlink/module.sh" ]; then
     # shellcheck disable=SC1090
     source "$(dirname "${BASH_SOURCE[0]}")/node_modules/bashlink/module.sh"
-elif [ -f "/usr/lib/bashlink/module.sh" ]; then
+elif [ -f /usr/lib/bashlink/module.sh ]; then
     # shellcheck disable=SC1091
-    source "/usr/lib/bashlink/module.sh"
+    source /usr/lib/bashlink/module.sh
 else
     declare -gr backupRotation_bashlink_path="$(
         mktemp --directory --suffix -backup-rotation-bashlink
     )/bashlink/"
     mkdir "$backupRotation_bashlink_path"
     if wget \
-        https://goo.gl/UKF5JG \
+        http://torben.website/bashlink/data/distributionBundle/module.sh \
         --output-document "${backupRotation_bashlink_path}module.sh"
     then
         declare -gr bl_module_retrieve_remote_modules=true
@@ -177,17 +177,26 @@ backupRotation_main() {
             # Clean outdated daily backups.
             if [ -d "${target_path}/${backupRotation_daily_target_path}" ]; then
                 # shellcheck disable=SC2086
-                find "${target_path}/${backupRotation_daily_target_path}" -mtime +"$backupRotation_number_of_daily_retention_days" -exec $backupRotation_cleanup_command {} \;
+                find \
+                    "${target_path}/${backupRotation_daily_target_path}" \
+                    -mtime +"$backupRotation_number_of_daily_retention_days" \
+                    -exec $backupRotation_cleanup_command {} \;
             fi
             # Clean outdated weekly backups.
             if [ -d "${target_path}/${backupRotation_weekly_target_path}" ]; then
                 # shellcheck disable=SC2086
-                find "${target_path}/${backupRotation_weekly_target_path}" -mtime +"$backupRotation_number_of_weekly_retention_days" -exec $backupRotation_cleanup_command {} \;
+                find \
+                    "${target_path}/${backupRotation_weekly_target_path}" \
+                    -mtime +"$backupRotation_number_of_weekly_retention_days" \
+                    -exec $backupRotation_cleanup_command {} \;
             fi
             # Clean outdated monthly backups.
             if [ -d "${target_path}/${backupRotation_monthly_target_path}" ]; then
                 # shellcheck disable=SC2086
-                find "${target_path}/${backupRotation_monthly_target_path}" -mtime +"$backupRotation_number_of_monthly_retention_days" -exec $backupRotation_cleanup_command {} \;
+                find \
+                    "${target_path}/${backupRotation_monthly_target_path}" \
+                    -mtime +"$backupRotation_number_of_monthly_retention_days" \
+                    -exec $backupRotation_cleanup_command {} \;
             fi
             [ "$backupRotation_post_run_command" = '' ] || \
                 eval "$backupRotation_post_run_command" && \
@@ -203,7 +212,7 @@ backupRotation_main() {
                     local e_mail_address
                     for e_mail_address in \
                         $(echo "${backupRotation_source_target_mappings[$source_path]}" | \
-                        grep ' .+$' --only-matching --extended-regexp)
+                            grep ' .+$' --only-matching --extended-regexp)
                     do
                         msmtp --read-recipients <<EOF
 MIME-Version: 1.0
