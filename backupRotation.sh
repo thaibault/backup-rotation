@@ -126,8 +126,7 @@ if [ -f /etc/backupRotation ]; then
 fi
 ## endregion
 # endregion
-# region functions
-## region controller
+# region controller
 alias backupRotation.main=backupRotation_main
 backupRotation_main() {
     local -r __documentation__='
@@ -136,13 +135,14 @@ backupRotation_main() {
     $backupRotation_verbose && \
         bl.logging.set_level info
     local -ir month_day_number="$(
-        date +'%d' | grep '[1-9][0-9]?' --only-matching --extended-regexp)"
+        date +'%d' | \
+            command grep '[1-9][0-9]?' --only-matching --extended-regexp)"
     local -ir week_day_number="$(date +'%u')"
     local source_path
     for source_path in "${!backupRotation_source_target_mappings[@]}"; do
         local target_path="$(
             echo "${backupRotation_source_target_mappings[$source_path]}" | \
-                grep '^[^ ]+' --only-matching --extended-regexp)"
+                command grep '^[^ ]+' --only-matching --extended-regexp)"
         local target_file_path="${target_path}/${backupRotation_daily_target_path}${backupRotation_target_daily_file_name}"
         if (( backupRotation_month_day_number == month_day_number )); then
             target_file_path="${target_path}/${backupRotation_monthly_target_path}${backupRotation_target_monthly_file_name}"
@@ -212,7 +212,7 @@ backupRotation_main() {
                     local e_mail_address
                     for e_mail_address in \
                         $(echo "${backupRotation_source_target_mappings[$source_path]}" | \
-                            grep ' .+$' --only-matching --extended-regexp)
+                            command grep ' .+$' --only-matching --extended-regexp)
                     do
                         msmtp --read-recipients <<EOF
 MIME-Version: 1.0
@@ -272,7 +272,7 @@ EOF
                 local e_mail_address
                 for e_mail_address in \
                     $(echo "${backupRotation_source_target_mappings[$source_path]}" | \
-                        grep ' .+$' --only-matching --extended-regexp)
+                        command grep ' .+$' --only-matching --extended-regexp)
                 do
                     msmtp --read-recipients <<EOF
 MIME-Version: 1.0
@@ -323,7 +323,6 @@ EOF
         fi
     done
 }
-## endregion
 # endregion
 if bl.tools.is_main; then
     bl.exception.activate
