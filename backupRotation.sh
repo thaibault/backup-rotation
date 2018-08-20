@@ -133,8 +133,9 @@ backupRotation_main() {
     local -r __documentation__='
         Get current month and week day number
     '
-    $backupRotation_verbose && \
+    if $backupRotation_verbose; then
         bl.logging.set_level info
+    fi
     local -ir month_day_number="$(
         date +'%d' | \
             command grep '[1-9][0-9]?' --only-matching --extended-regexp)"
@@ -168,7 +169,7 @@ backupRotation_main() {
                 "${target_path}/${backupRotation_daily_target_path}${backupRotation_target_daily_file_name}${backupRotation_target_file_extension}"
         fi
         mkdir --parents "$(dirname "$target_file_path")"
-        if $backupRotation_verbose; then
+        if bl.logging.is_enabled info; then
             echo "Running \"${backupRotation_command}\"."
         else
             backupRotation_command+="${backupRotation_command} &>/dev/null"
@@ -205,10 +206,12 @@ backupRotation_main() {
             if $successful; then
                 # shellcheck disable=SC2089
                 local message="Source files in \"$source_path\" from node \"$backupRotation_name\" successfully backed up to \"${target_file_path}${backupRotation_target_file_extension}\"."$'\n\nCurrent Backup structure:\n'
-                $backupRotation_verbose && \
-                    echo -e "$message" && \
-                        tree -h -t "$target_path" && \
-                            df ./ --human-readable
+                if bl.logging.is_enabled info; then
+                    echo -e "$message"
+                    tree -h -t "$target_path"
+                    du --human-readable --summarize "$target_path"
+                    df ./ --human-readable
+                fi
                 if hash msmtp && [[ "$backupRotation_sender_e_mail_address" != '' ]]; then
                     local e_mail_address
                     for e_mail_address in \
@@ -245,7 +248,10 @@ $(
 )
         </pre>
     </p>
-    <p><pre>$(df ./ --human-readable)</pre></p>
+    <p><pre>$(
+        du --human-readable --summarize "$target_path" && \
+        df ./ --human-readable
+    )</pre></p>
 </body>
 </html>
 
@@ -263,10 +269,10 @@ EOF
         fi
         if ! $successful; then
             local message="Source files in \"$source_path\" from node \"$backupRotation_name\" should be backed up but has failed."$'\n\nCurrent Backup structure:\n'
-            $backupRotation_verbose && \
             if bl.logging.is_enabled info; then
                 bl.logging.info "$message"
                 tree -h -t "$target_path"
+                du --human-readable --summarize "$target_path"
                 df ./ --human-readable
             fi
             if hash msmtp && [[ "$backupRotation_sender_e_mail_address" != '' ]]; then
@@ -306,7 +312,10 @@ $(
 )
         </pre>
     </p>
-    <p><pre>$(df ./ --human-readable)</pre></p>
+    <p><pre>$(
+        du --human-readable --summarize "$target_path" && \
+        df ./ --human-readable
+    )</pre></p>
 </body>
 </html>
 
