@@ -55,11 +55,11 @@ or after installation:
 backup-rotation
 ```
 
-Installation with yourt from the arch user repository
+Installation with yay from the arch user repository
 -----------------------------------------------------
 
 ```sh
-yaourt --sync backupRotation
+yay --sync backupRotation
 ```
 
 Manual installation on any posix compatible operating system
