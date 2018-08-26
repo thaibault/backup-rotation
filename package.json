@@ -35,7 +35,7 @@
     "lint": "hash shellcheck && shellcheck -x *.sh || echo Please install \"shellcheck\". || true",
     "lint:given": "shellcheck -x",
     "test": "bashlink-doctest --verbose ../../backupRotation",
-    "update": "npm version patch && npm publish",
+    "update": "yarn version --patch && yarn publish",
     "update:documentation": "documentationWebsite --log-level info"
   },
   "devDependencies": {
