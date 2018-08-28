@@ -3,7 +3,7 @@
   "version": "1.0.39",
   "license": "CC-BY-3.0",
   "description": "This script allows you to create a local or remote backup rotation for your files.",
-  "homepage": "http://torben.website/backupRotation",
+  "homepage": "https://torben.website/backupRotation",
   "documentationWebsite": {
     "name": "backupRotation",
     "trackingCode": "UA-40192634-13"
@@ -39,10 +39,10 @@
     "update:documentation": "documentationWebsite --log-level info"
   },
   "devDependencies": {
-    "documentation-website": "^1.0.136",
-    "shellcheck": "0.0.8"
+    "documentation-website": "*",
+    "shellcheck": "*"
   },
   "dependencies": {
-    "bashlink": "^1.0.117"
+    "bashlink": "*"
   }
 }
