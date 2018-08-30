@@ -111,8 +111,8 @@ declare -gi backupRotation_number_of_weekly_retention_days=56
 # Creates monthly backups for the last year.
 declare -gi backupRotation_number_of_monthly_retention_days=365
 declare -g backupRotation_target_file_extension=.tar.gz
-declare -g backupRotation_command_default_arguments='--recursive --delete --perms --executability --owner --group --times --devices --specials --acls --links --super --whole-file --force --protect-args --hard-links --max-delete=1 --progress --human-readable --itemize-changes --verbose --exclude=backup --exclude=done --exclude=log --exclude=migration --exclude=mockup --exclude=node_modules --exclude=preRendered --exclude=readme.md --exclude=.cache --exclude=.git --exclude=.local --exclude=.ssh --exclude=.yarn --exclude=.m2 --exclude=.npm'
-declare -g backupRotation_command="rsync $backupRotation_command_default_arguments "'"$source_path" "$target_file_path" && pushd "$(dirname "$target_file_path")" && tar --create --verbose --gzip --file "${target_file_path}${backupRotation_target_file_extension}" "$(basename "$target_file_path")"; popd && rm --recursive --verbose "$target_file_path"'
+declare -g backupRotation_command_default_arguments='--acls --delete --devices --exclude=backup --exclude=done --exclude=log --exclude=migration --exclude=mockup --exclude=node_modules --exclude=preRendered --exclude=readme.md --exclude=.cache --exclude=.git --exclude=.local --exclude=.ssh --exclude=.yarn --exclude=.m2 --exclude=.npm --executability --force --group --hard-links --human-readable --itemize-changes --links --max-delete=1 --owner --perms --progress --protect-args --specials --super --times --verbose --whole-file'
+declare -g backupRotation_command=''
 declare -g backupRotation_post_run_command=''
 # Folder to delete is the last command line argument.
 declare -g backupRotation_cleanup_command='rm --recursive --verbose'
@@ -124,6 +124,9 @@ declare -g backupRotation_name=NODE_NAME
 if [ -f /etc/backupRotation ]; then
     # shellcheck disable=SC1091
     source /etc/backupRotation
+fi
+if [ "$backupRotation_command" = '' ]; then
+    backupRotation_command="rsync $backupRotation_command_default_arguments "'"$source_path" "$target_file_path" && pushd "$(dirname "$target_file_path")" && tar --create --verbose --gzip --file "${target_file_path}${backupRotation_target_file_extension}" "$(basename "$target_file_path")"; popd && rm --recursive --verbose "$target_file_path"'
 fi
 ## endregion
 # endregion
