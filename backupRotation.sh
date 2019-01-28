@@ -7,7 +7,7 @@
 # -------
 
 # This library written by Torben Sickert stand under a creative commons naming
-# 3.0 unported license. see http://creativecommons.org/licenses/by/3.0/deed.de
+# 3.0 unported license. See https://creativecommons.org/licenses/by/3.0/deed.de
 # endregion
 # shellcheck disable=SC1004,SC2016,SC2034,SC2155
 # region import
@@ -23,7 +23,7 @@ else
     )/bashlink/"
     mkdir "$backupRotation_bashlink_path"
     if wget \
-        http://torben.website/bashlink/data/distributionBundle/module.sh \
+        https://torben.website/bashlink/data/distributionBundle/module.sh \
         --output-document "${backupRotation_bashlink_path}module.sh"
     then
         declare -gr bl_module_retrieve_remote_modules=true
