@@ -31,6 +31,7 @@ else
         declare -gr bl_module_retrieve_remote_modules=true
         # shellcheck disable=SC1090
         source "${backupRotation_bashlink_path}/module.sh"
+        rm --force --recursive "$backupRotation_bashlink_path"
     else
         echo Needed bashlink library not found 1>&2
         rm --force --recursive "$backupRotation_bashlink_path"
