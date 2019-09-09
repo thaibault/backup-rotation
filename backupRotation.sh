@@ -126,7 +126,11 @@ declare -g backupRotation_target_file_extension=.tar.gz
 
 declare -g backupRotation_command_default_arguments='--acls --delete --devices --exclude=backup --exclude=done --exclude=log --exclude=migration --exclude=mockup --exclude=node_modules --exclude=preRendered --exclude=readme.md --exclude=.cache --exclude=.git --exclude=.local --exclude=.ssh --exclude=.yarn --exclude=.m2 --exclude=.npm --executability --force --group --hard-links --human-readable --itemize-changes --links --max-delete=1 --owner --perms --progress --protect-args --specials --recursive --super --times --verbose --whole-file'
 declare -g backupRotation_command=''
-declare -g backupRotation_encrypt_command='! test -s /etc/backupRotationPassword || cat /etc/backupRotationPassword | gpg --batch --encrypt --no-symkey-cache --output "${target_file_path}${backupRotation_target_file_extension}.gpg" --passphrase-fd 0 --pinentry-mode loopback "${target_file_path}${backupRotation_target_file_extension}"'
+# NOTE: Encrypt with per batch mode:
+# cat /etc/backupRotationPassword | gpg --batch --decrypt --no-symkey-cache --output "${target_file_path}${backupRotation_target_file_extension}" --passphrase-fd 0 --pinentry-mode loopback "${target_file_path}${backupRotation_target_file_extension}.gpg"
+# or interactively:
+# gpg --decrypt --no-symkey-cache --output "${target_file_path}${backupRotation_target_file_extension}" "${target_file_path}${backupRotation_target_file_extension}.gpg"
+declare -g backupRotation_encrypt_command='if [ -s /etc/backupRotationPassword ]; then cat /etc/backupRotationPassword | gpg --batch --no-symkey-cache --output "${target_file_path}${backupRotation_target_file_extension}.gpg" --passphrase-fd 0 --pinentry-mode loopback --symmetric "${target_file_path}${backupRotation_target_file_extension}"; fi true'
 
 declare -g backupRotation_post_run_command=''
 # Folder to delete is the last command line argument.
