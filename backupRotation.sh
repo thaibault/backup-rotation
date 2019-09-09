@@ -13,7 +13,8 @@
 # endregion
 # shellcheck disable=SC1004,SC2016,SC2034,SC2155
 # region import
-if [ -f "$(dirname "${BASH_SOURCE[0]}")/node_modules/bashlink/module.sh" ]; then
+if [ -f "$(dirname "${BASH_SOURCE[0]}")/node_modules/bashlink/module.sh" ]
+then
     # shellcheck disable=SC1090
     source "$(dirname "${BASH_SOURCE[0]}")/node_modules/bashlink/module.sh"
 elif [ -f /usr/lib/bashlink/module.sh ]; then
@@ -43,6 +44,7 @@ bl.module.import bashlink.logging
 bl.module.import bashlink.tools
 # endregion
 # region variables
+## region documentation
 declare -gr backupRotation__documentation__='
     This module provides generic service handling for each program supporting
     standard process signals. In general you only have to replace the string
@@ -91,31 +93,41 @@ declare -agr backupRotation__dependencies__=(
     msmtp
     test
 )
+## endregion
 ## region default options
 declare -Ag backupRotation_source_target_mappings=()
+
 # Disables by e-mail sending if empty.
 declare -g backupRotation_sender_e_mail_address=''
 declare -g backupRotation_replier_e_mail_address="$backupRotation_sender_e_mail_address"
+
 declare -g backupRotation_daily_target_path=daily/
 declare -g backupRotation_weekly_target_path=weekly/
 declare -g backupRotation_monthly_target_path=monthly/
+
 declare -g backupRotation_target_daily_file_name="$(date +'%d-%m-%Y')"
 declare -g backupRotation_target_weekly_file_name="$(
     date +'%V.week-')${backupRotation_target_daily_file_name}"
 declare -g backupRotation_target_monthly_file_name="$backupRotation_target_daily_file_name"
+
 # Should be in range 1 till 28
 declare -gi backupRotation_month_day_number=1
 # Should be in range 1 till 7
 declare -gi backupRotation_week_day_number=6 # Saturday
+
 # Creates daily backups for the last 14 days.
 declare -gi backupRotation_number_of_daily_retention_days=14
 # Creates weekly backups for the last 2 month.
 declare -gi backupRotation_number_of_weekly_retention_days=56
 # Creates monthly backups for the last year.
 declare -gi backupRotation_number_of_monthly_retention_days=365
+
 declare -g backupRotation_target_file_extension=.tar.gz
+
 declare -g backupRotation_command_default_arguments='--acls --delete --devices --exclude=backup --exclude=done --exclude=log --exclude=migration --exclude=mockup --exclude=node_modules --exclude=preRendered --exclude=readme.md --exclude=.cache --exclude=.git --exclude=.local --exclude=.ssh --exclude=.yarn --exclude=.m2 --exclude=.npm --executability --force --group --hard-links --human-readable --itemize-changes --links --max-delete=1 --owner --perms --progress --protect-args --specials --recursive --super --times --verbose --whole-file'
 declare -g backupRotation_command=''
+declare -g backupRotation_encrypt_command='! test -s /etc/backupRotationPassword || cat /etc/backupRotationPassword | gpg --batch --encrypt --no-symkey-cache --output "${target_file_path}${backupRotation_target_file_extension}.pgp" --passphrase-fd 0 --pinentry-mode loopback "${target_file_path}${backupRotation_target_file_extension}"'
+
 declare -g backupRotation_post_run_command=''
 # Folder to delete is the last command line argument.
 declare -g backupRotation_cleanup_command='rm --recursive --verbose'
@@ -123,8 +135,8 @@ declare -g backupRotation_verbose=false
 declare -g backupRotation_monitoring_url=''
 declare -g backupRotation_name=NODE_NAME
 ## endregion
-## region load options if present
-if [ -f /etc/backupRotation ]; then
+## region load options if present and not empty
+if [ -s /etc/backupRotation ]; then
     # shellcheck disable=SC1091
     source /etc/backupRotation
 fi
@@ -182,6 +194,13 @@ backupRotation_main() {
         fi
         local successful=false
         if eval "$backupRotation_command"; then
+            if [[ "$backupRotation_encrypt_command" != '' ]]; then
+                if eval "$backupRotation_encrypt_command"; then
+                    successful=true
+                fi
+            else
+                successful=true
+            fi
             # Clean outdated daily backups.
             if [ -d "${target_path}/${backupRotation_daily_target_path}" ]; then
                 # shellcheck disable=SC2086
@@ -206,9 +225,13 @@ backupRotation_main() {
                     -mtime +"$backupRotation_number_of_monthly_retention_days" \
                     -exec $backupRotation_cleanup_command {} \;
             fi
-            [ "$backupRotation_post_run_command" = '' ] || \
-                eval "$backupRotation_post_run_command" && \
-                successful=true
+            if \
+                $successful && \
+                [[ "$backupRotation_post_run_command" != '' ]] && \
+                ! eval "$backupRotation_post_run_command"
+            then
+                successful=false
+            fi
             if $successful; then
                 # shellcheck disable=SC2089
                 local message="Source files in \"$source_path\" from node \"$backupRotation_name\" successfully backed up to \"${target_file_path}${backupRotation_target_file_extension}\"."$'\n\nCurrent Backup structure:\n'
@@ -345,6 +368,7 @@ if bl.tools.is_main; then
     bl.exception.try
         backupRotation.main "$@"
     bl.exception.catch_single
+    # region clean up
     {
         [ -d "$backupRotation_bashlink_path" ] && \
             rm --recursive "$backupRotation_bashlink_path"
@@ -359,6 +383,7 @@ if bl.tools.is_main; then
     # shellcheck disable=SC2154
     [ -d "$bl_module_remote_module_cache_path" ] && \
         rm --recursive "$bl_module_remote_module_cache_path"
+    # endregion
 fi
 # region vim modline
 # vim: set tabstop=4 shiftwidth=4 expandtab:
