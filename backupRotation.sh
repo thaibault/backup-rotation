@@ -130,13 +130,8 @@ declare -g backupRotation_command=''
 # NOTE: Encrypt with per batch mode:
 # cat /etc/backupRotationPassword | gpg --batch --decrypt --no-symkey-cache --output "${target_file_basepath}${backupRotation_target_file_baseextension}" --passphrase-fd 0 --pinentry-mode loopback "${target_file_basepath}${backupRotation_target_file_extension}"
 # or interactively:
-<<<<<<< HEAD
 # gpg --decrypt --no-symkey-cache --output "${target_file_basepath}${backupRotation_target_file_baseextension}" "${target_file_basepath}${backupRotation_target_file_extension}"
-declare -g backupRotation_encrypt_command='if [ -s /etc/backupRotationPassword ]; then cat /etc/backupRotationPassword | gpg --batch --no-symkey-cache --output "${target_file_basepath}${backupRotation_target_file_extension}" --passphrase-fd 0 --pinentry-mode loopback --symmetric "${target_file_basepath}${backupRotation_target_file_baseextension}"; fi true'
-=======
-# gpg --decrypt --no-symkey-cache --output "${target_file_path}${backupRotation_target_file_extension}" "${target_file_path}${backupRotation_target_file_extension}.gpg"
-declare -g backupRotation_encrypt_command='if [ -s /etc/backupRotationPassword ]; then rm "${target_file_path}${backupRotation_target_file_extension}.gpg" &>/dev/null; cat /etc/backupRotationPassword | gpg --batch --no-symkey-cache --output "${target_file_path}${backupRotation_target_file_extension}.gpg" --passphrase-fd 0 --pinentry-mode loopback --symmetric "${target_file_path}${backupRotation_target_file_extension}" && rm "${target_file_path}${backupRotation_target_file_extension}"; fi; true'
->>>>>>> 80d211c9f02f8bd6aa20dd21b9bd24d588dcecd9
+declare -g backupRotation_encrypt_command='if [ -s /etc/backupRotationPassword ]; then rm "${target_file_path}${backupRotation_target_file_extension}.gpg" &>/dev/null; cat /etc/backupRotationPassword | gpg --batch --no-symkey-cache --output "${target_file_basepath}${backupRotation_target_file_extension}" --passphrase-fd 0 --pinentry-mode loopback --symmetric "${target_file_basepath}${backupRotation_target_file_baseextension}" && rm "${target_file_path}${backupRotation_target_file_baseextension}"; fi true'
 
 declare -g backupRotation_post_run_command=''
 # Folder to delete is the last command line argument.
