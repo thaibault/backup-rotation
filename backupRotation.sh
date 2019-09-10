@@ -92,6 +92,7 @@ declare -agr backupRotation__dependencies__=(
     find
     msmtp
     test
+    tree
 )
 ## endregion
 ## region default options
