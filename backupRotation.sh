@@ -131,7 +131,7 @@ declare -g backupRotation_command=''
 # cat /etc/backupRotationPassword | gpg --batch --decrypt --no-symkey-cache --output "${target_file_basepath}${backupRotation_target_file_baseextension}" --passphrase-fd 0 --pinentry-mode loopback "${target_file_basepath}${backupRotation_target_file_extension}"
 # or interactively:
 # gpg --decrypt --no-symkey-cache --output "${target_file_basepath}${backupRotation_target_file_baseextension}" "${target_file_basepath}${backupRotation_target_file_extension}"
-declare -g backupRotation_encrypt_command='if [ -s /etc/backupRotationPassword ]; then rm "${target_file_basepath}${backupRotation_target_file_extension}" &>/dev/null; cat /etc/backupRotationPassword | gpg --batch --no-symkey-cache --output "${target_file_basepath}${backupRotation_target_file_extension}" --passphrase-fd 0 --pinentry-mode loopback --symmetric "${target_file_basepath}${backupRotation_target_file_baseextension}" && rm "${target_file_basepath}${backupRotation_target_file_baseextension}"; fi true'
+declare -g backupRotation_encrypt_command='if [ -s /etc/backupRotationPassword ]; then rm "${target_file_basepath}${backupRotation_target_file_extension}" &>/dev/null; cat /etc/backupRotationPassword | gpg --batch --no-symkey-cache --output "${target_file_basepath}${backupRotation_target_file_extension}" --passphrase-fd 0 --pinentry-mode loopback --symmetric "${target_file_basepath}${backupRotation_target_file_baseextension}" && rm "${target_file_basepath}${backupRotation_target_file_baseextension}"; else true; fi'
 
 declare -g backupRotation_post_run_command=''
 # Folder to delete is the last command line argument.
