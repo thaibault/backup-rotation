@@ -129,7 +129,7 @@ declare -g backupRotation_target_file_extension="${backupRotation_target_file_ba
 declare -g backupRotation_command_default_arguments='--acls --delete --devices --exclude=backup --exclude=done --exclude=log --exclude=migration --exclude=mockup --exclude=node_modules --exclude=preRendered --exclude=readme.md --exclude=.cache --exclude=.git --exclude=.local --exclude=.ssh --exclude=.yarn --exclude=.m2 --exclude=.npm --executability --force --group --hard-links --human-readable --itemize-changes --links --max-delete=1 --owner --perms --progress --protect-args --specials --recursive --super --times --verbose --whole-file'
 declare -g backupRotation_command=''
 declare -g backupRotation_encrypt_command=''
-if [ -s /etc/backupRotationPassword ]
+if [ -s /etc/backupRotationPassword ]; then
     # NOTE: Encrypt with per batch mode:
     # cat /etc/backupRotationPassword | gpg --batch --decrypt --no-symkey-cache --output "${target_file_basepath}${backupRotation_target_file_baseextension}" --passphrase-fd 0 --pinentry-mode loopback "${target_file_basepath}${backupRotation_target_file_extension}"
     # or interactively:
