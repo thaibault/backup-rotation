@@ -105,10 +105,10 @@ declare -g backupRotation_daily_target_path=daily/
 declare -g backupRotation_weekly_target_path=weekly/
 declare -g backupRotation_monthly_target_path=monthly/
 
-declare -g backupRotation_target_daily_file_name="$(date +'%d-%m-%Y')"
-declare -g backupRotation_target_weekly_file_name="$(
-    date +'%V.week-')${backupRotation_target_daily_file_name}"
-declare -g backupRotation_target_monthly_file_name="$backupRotation_target_daily_file_name"
+declare -g backupRotation_target_daily_file_basename="$(date +'%d-%m-%Y')"
+declare -g backupRotation_target_weekly_file_basename="$(
+    date +'%V.week-')${backupRotation_target_daily_file_basename}"
+declare -g backupRotation_target_monthly_file_basename="$backupRotation_target_daily_file_basename"
 
 # Should be in range 1 till 28
 declare -gi backupRotation_month_day_number=1
@@ -122,15 +122,16 @@ declare -gi backupRotation_number_of_weekly_retention_days=56
 # Creates monthly backups for the last year.
 declare -gi backupRotation_number_of_monthly_retention_days=365
 
-declare -g backupRotation_target_file_extension=.tar.gz
+declare -g backupRotation_target_file_baseextension=.tar.gz
+declare -g backupRotation_target_file_extension="${backupRotation_target_file_baseextension}.gpg"
 
 declare -g backupRotation_command_default_arguments='--acls --delete --devices --exclude=backup --exclude=done --exclude=log --exclude=migration --exclude=mockup --exclude=node_modules --exclude=preRendered --exclude=readme.md --exclude=.cache --exclude=.git --exclude=.local --exclude=.ssh --exclude=.yarn --exclude=.m2 --exclude=.npm --executability --force --group --hard-links --human-readable --itemize-changes --links --max-delete=1 --owner --perms --progress --protect-args --specials --recursive --super --times --verbose --whole-file'
 declare -g backupRotation_command=''
 # NOTE: Encrypt with per batch mode:
-# cat /etc/backupRotationPassword | gpg --batch --decrypt --no-symkey-cache --output "${target_file_path}${backupRotation_target_file_extension}" --passphrase-fd 0 --pinentry-mode loopback "${target_file_path}${backupRotation_target_file_extension}.gpg"
+# cat /etc/backupRotationPassword | gpg --batch --decrypt --no-symkey-cache --output "${target_file_basepath}${backupRotation_target_file_baseextension}" --passphrase-fd 0 --pinentry-mode loopback "${target_file_basepath}${backupRotation_target_file_extension}"
 # or interactively:
-# gpg --decrypt --no-symkey-cache --output "${target_file_path}${backupRotation_target_file_extension}" "${target_file_path}${backupRotation_target_file_extension}.gpg"
-declare -g backupRotation_encrypt_command='if [ -s /etc/backupRotationPassword ]; then cat /etc/backupRotationPassword | gpg --batch --no-symkey-cache --output "${target_file_path}${backupRotation_target_file_extension}.gpg" --passphrase-fd 0 --pinentry-mode loopback --symmetric "${target_file_path}${backupRotation_target_file_extension}"; fi true'
+# gpg --decrypt --no-symkey-cache --output "${target_file_basepath}${backupRotation_target_file_baseextension}" "${target_file_basepath}${backupRotation_target_file_extension}"
+declare -g backupRotation_encrypt_command='if [ -s /etc/backupRotationPassword ]; then cat /etc/backupRotationPassword | gpg --batch --no-symkey-cache --output "${target_file_basepath}${backupRotation_target_file_extension}" --passphrase-fd 0 --pinentry-mode loopback --symmetric "${target_file_basepath}${backupRotation_target_file_baseextension}"; fi true'
 
 declare -g backupRotation_post_run_command=''
 # Folder to delete is the last command line argument.
@@ -144,8 +145,11 @@ if [ -s /etc/backupRotation ]; then
     # shellcheck disable=SC1091
     source /etc/backupRotation
 fi
+if [ "$backupRotation_encrypt_command" = '' ]; then
+    backupRotation_target_file_extension="$backupRotation_target_file_baseextension"
+fi
 if [ "$backupRotation_command" = '' ]; then
-    backupRotation_command="rsync $backupRotation_command_default_arguments "'"$source_path" "$target_file_path" && pushd "$(dirname "$target_file_path")" && tar --create --verbose --gzip --file "${target_file_path}${backupRotation_target_file_extension}" "$(basename "$target_file_path")"; popd && rm --recursive --verbose "$target_file_path"'
+    backupRotation_command="rsync $backupRotation_command_default_arguments "'"$source_path" "$target_file_basepath" && pushd "$(dirname "$target_file_basepath")" && tar --create --verbose --gzip --file "${target_file_basepath}${backupRotation_target_file_baseextension}" "$(basename "$target_file_basepath")"; popd && rm --recursive --verbose "$target_file_basepath"'
 fi
 ## endregion
 # endregion
@@ -167,30 +171,30 @@ backupRotation_main() {
         local target_path="$(
             echo "${backupRotation_source_target_mappings[$source_path]}" | \
                 command grep '^[^ ]+' --only-matching --extended-regexp)"
-        local target_file_path="${target_path}/${backupRotation_daily_target_path}${backupRotation_target_daily_file_name}"
+        local target_file_basepath="${target_path}/${backupRotation_daily_target_path}${backupRotation_target_daily_file_basename}"
         if (( backupRotation_month_day_number == month_day_number )); then
-            target_file_path="${target_path}/${backupRotation_monthly_target_path}${backupRotation_target_monthly_file_name}"
+            target_file_basepath="${target_path}/${backupRotation_monthly_target_path}${backupRotation_target_monthly_file_basename}"
             ln \
                 --force \
                 --symbolic \
-                "${target_file_path}${backupRotation_target_file_extension}" \
-                "${target_path}/${backupRotation_daily_target_path}${backupRotation_target_daily_file_name}${backupRotation_target_file_extension}"
+                "${target_file_basepath}${backupRotation_target_file_extension}" \
+                "${target_path}/${backupRotation_daily_target_path}${backupRotation_target_daily_file_basename}${backupRotation_target_file_extension}"
             if (( backupRotation_week_day_number == week_day_number )); then
                 ln \
                     --force \
                     --symbolic \
-                    "${target_file_path}${backupRotation_target_file_extension}" \
-                    "${target_path}/${backupRotation_weekly_target_path}${backupRotation_target_weekly_file_name}${backupRotation_target_file_extension}"
+                    "${target_file_basepath}${backupRotation_target_file_extension}" \
+                    "${target_path}/${backupRotation_weekly_target_path}${backupRotation_target_weekly_file_basename}${backupRotation_target_file_extension}"
             fi
         elif (( backupRotation_week_day_number == week_day_number )); then
-            target_file_path="${target_path}/${backupRotation_weekly_target_path}${backupRotation_target_weekly_file_name}"
+            target_file_basepath="${target_path}/${backupRotation_weekly_target_path}${backupRotation_target_weekly_file_basename}"
             ln \
                 --force \
                 --symbolic \
-                "${target_file_path}${backupRotation_target_file_extension}" \
-                "${target_path}/${backupRotation_daily_target_path}${backupRotation_target_daily_file_name}${backupRotation_target_file_extension}"
+                "${target_file_basepath}${backupRotation_target_file_extension}" \
+                "${target_path}/${backupRotation_daily_target_path}${backupRotation_target_daily_file_basename}${backupRotation_target_file_extension}"
         fi
-        mkdir --parents "$(dirname "$target_file_path")"
+        mkdir --parents "$(dirname "$target_file_basepath")"
         if bl.logging.is_enabled info; then
             echo "Running \"${backupRotation_command}\"."
         else
@@ -238,7 +242,7 @@ backupRotation_main() {
             fi
             if $successful; then
                 # shellcheck disable=SC2089
-                local message="Source files in \"$source_path\" from node \"$backupRotation_name\" successfully backed up to \"${target_file_path}${backupRotation_target_file_extension}\"."$'\n\nCurrent Backup structure:\n'
+                local message="Source files in \"$source_path\" from node \"$backupRotation_name\" successfully backed up to \"${target_file_basepath}${backupRotation_target_file_extension}\"."$'\n\nCurrent Backup structure:\n'
                 if bl.logging.is_enabled info; then
                     echo -e "$message"
                     tree -h -t "$target_path"
@@ -275,9 +279,9 @@ $(
     tree -h -t "$target_path" | \
         sed 's/</\&lt;/g' | \
             sed 's/>/\&gt;/g' | \
-                sed "0,/${backupRotation_target_daily_file_name}${backupRotation_target_file_extension}/s/${backupRotation_target_daily_file_name}${backupRotation_target_file_extension}/<span style=\"font-weight:bold\">${backupRotation_target_daily_file_name}${backupRotation_target_file_extension}<\\/span>/" | \
-                    sed "s/${backupRotation_target_weekly_file_name}${backupRotation_target_file_extension}/<span style=\"font-weight:bold\">${backupRotation_target_weekly_file_name}${backupRotation_target_file_extension}<\\/span>/" | \
-                        sed "s/${backupRotation_target_monthly_file_name}${backupRotation_target_file_extension}/<span style=\"font-weight:bold\">${backupRotation_target_monthly_file_name}${backupRotation_target_file_extension}<\\/span>/"
+                sed "0,/${backupRotation_target_daily_file_basename}${backupRotation_target_file_extension}/s/${backupRotation_target_daily_file_basename}${backupRotation_target_file_extension}/<span style=\"font-weight:bold\">${backupRotation_target_daily_file_basename}${backupRotation_target_file_extension}<\\/span>/" | \
+                    sed "s/${backupRotation_target_weekly_file_basename}${backupRotation_target_file_extension}/<span style=\"font-weight:bold\">${backupRotation_target_weekly_file_basename}${backupRotation_target_file_extension}<\\/span>/" | \
+                        sed "s/${backupRotation_target_monthly_file_basename}${backupRotation_target_file_extension}/<span style=\"font-weight:bold\">${backupRotation_target_monthly_file_basename}${backupRotation_target_file_extension}<\\/span>/"
 )
         </pre>
     </p>
@@ -339,9 +343,9 @@ $(
     tree -h -t "$target_path" | \
         sed 's/</\&lt;/g' | \
             sed 's/>/\&gt;/g' | \
-                sed "0,/${backupRotation_target_daily_file_name}${backupRotation_target_file_extension}/s/${backupRotation_target_daily_file_name}${backupRotation_target_file_extension}/<span style=\"font-weight:bold\">${backupRotation_target_daily_file_name}${backupRotation_target_file_extension}<\\/span>/" | \
-                    sed "s/${backupRotation_target_weekly_file_name}${backupRotation_target_file_extension}/<span style=\"font-weight:bold\">${backupRotation_target_weekly_file_name}${backupRotation_target_file_extension}<\\/span>/" | \
-                        sed "s/${backupRotation_target_monthly_file_name}${backupRotation_target_file_extension}/<span style=\"font-weight:bold\">${backupRotation_target_monthly_file_name}${backupRotation_target_file_extension}<\\/span>/"
+                sed "0,/${backupRotation_target_daily_file_basename}${backupRotation_target_file_extension}/s/${backupRotation_target_daily_file_basename}${backupRotation_target_file_extension}/<span style=\"font-weight:bold\">${backupRotation_target_daily_file_basename}${backupRotation_target_file_extension}<\\/span>/" | \
+                    sed "s/${backupRotation_target_weekly_file_basename}${backupRotation_target_file_extension}/<span style=\"font-weight:bold\">${backupRotation_target_weekly_file_basename}${backupRotation_target_file_extension}<\\/span>/" | \
+                        sed "s/${backupRotation_target_monthly_file_basename}${backupRotation_target_file_extension}/<span style=\"font-weight:bold\">${backupRotation_target_monthly_file_basename}${backupRotation_target_file_extension}<\\/span>/"
 )
         </pre>
     </p>
