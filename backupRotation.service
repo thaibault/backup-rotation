@@ -9,10 +9,10 @@
 # 3.0 unported license. See https://creativecommons.org/licenses/by/3.0/deed.de
 # endregion
 [Unit]
-Description=Backup rotation logic.
-Conflicts=shutdown.target reboot.target halt.target
-Wants=network-online.target
 After=network.target network-online.target
+Conflicts=shutdown.target reboot.target halt.target
+Description=Backup rotation logic.
+Wants=network-online.target
 
 [Service]
 Type=oneshot
