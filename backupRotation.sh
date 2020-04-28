@@ -126,7 +126,7 @@ declare -gi backupRotation_number_of_monthly_retention_days=365
 declare -g backupRotation_target_file_baseextension=.tar.gz
 declare -g backupRotation_target_file_extension="${backupRotation_target_file_baseextension}.gpg"
 
-declare -g backupRotation_command_default_arguments='--acls --delete --devices --exclude=backup --exclude=done --exclude=log --exclude=migration --exclude=mockup --exclude=node_modules --exclude=preRendered --exclude=readme.md --exclude=.cache --exclude=.git --exclude=.local --exclude=.ssh --exclude=.yarn --exclude=.m2 --exclude=.npm --executability --force --group --hard-links --human-readable --itemize-changes --links --max-delete=1 --owner --perms --progress --protect-args --specials --recursive --super --times --verbose --whole-file'
+declare -g backupRotation_command_default_arguments='--acls --delete --devices --exclude=backup --exclude=done --exclude=log --exclude=migration --exclude=mockup --exclude=node_modules --exclude=preRendered --exclude=readme.md --exclude=.cache --exclude=.git --exclude=.local --exclude=.m2 --exclude=.node-gyp --exclude=.npm --exclude=.ssh --exclude=.yarn --executability --force --group --hard-links --human-readable --itemize-changes --links --max-delete=1 --owner --perms --progress --protect-args --specials --recursive --super --times --verbose --whole-file'
 declare -g backupRotation_command=''
 declare -g backupRotation_encrypt_command=''
 if [ -s /etc/backupRotationPassword ]; then
