@@ -44,5 +44,5 @@
   "devDependencies": {
     "documentation-website": "*",
     "shellcheck": "*"
-  ,
+  }
 }
