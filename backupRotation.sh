@@ -216,6 +216,10 @@ backupRotation_main() {
             # Clean outdated daily backups.
             if [ -d "${target_path}/${backupRotation_daily_target_path}" ]; then
                 # shellcheck disable=SC2086
+                bl.logging.info Clearing old daily backups:
+                find \
+                    "${target_path}/${backupRotation_daily_target_path}" \
+                    -mtime +"$backupRotation_number_of_daily_retention_days"
                 find \
                     "${target_path}/${backupRotation_daily_target_path}" \
                     -mtime +"$backupRotation_number_of_daily_retention_days" \
@@ -224,6 +228,10 @@ backupRotation_main() {
             # Clean outdated weekly backups.
             if [ -d "${target_path}/${backupRotation_weekly_target_path}" ]; then
                 # shellcheck disable=SC2086
+                bl.logging.info Clearing old weekly backups:
+                find \
+                    "${target_path}/${backupRotation_weekly_target_path}" \
+                    -mtime +"$backupRotation_number_of_weekly_retention_days"
                 find \
                     "${target_path}/${backupRotation_weekly_target_path}" \
                     -mtime +"$backupRotation_number_of_weekly_retention_days" \
@@ -232,6 +240,10 @@ backupRotation_main() {
             # Clean outdated monthly backups.
             if [ -d "${target_path}/${backupRotation_monthly_target_path}" ]; then
                 # shellcheck disable=SC2086
+                bl.logging.info Clearing old monthly backups:
+                find \
+                    "${target_path}/${backupRotation_monthly_target_path}" \
+                    -mtime +"$backupRotation_number_of_monthly_retention_days"
                 find \
                     "${target_path}/${backupRotation_monthly_target_path}" \
                     -mtime +"$backupRotation_number_of_monthly_retention_days" \
