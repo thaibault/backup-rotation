@@ -30,7 +30,7 @@ else
         --output-document "${backupRotation_bashlink_path}module.sh"
     then
         declare -gr bl_module_retrieve_remote_modules=true
-        # shellcheck disable=SC1090
+        # shellcheck disable=SC1091
         source "${backupRotation_bashlink_path}/module.sh"
         rm --force --recursive "$backupRotation_bashlink_path"
     else
@@ -98,7 +98,8 @@ declare -agr backupRotation__dependencies__=(
 ## region default options
 declare -Ag backupRotation_source_target_mappings=()
 
-# Disables by e-mail sending if empty.
+declare -g backupRotation_send_success_e_mails=true
+# Disables by setting e-mail address to an empty string.
 declare -g backupRotation_sender_e_mail_address=''
 declare -g backupRotation_replier_e_mail_address="$backupRotation_sender_e_mail_address"
 
@@ -168,13 +169,15 @@ backupRotation_main() {
     fi
     local -ir month_day_number="$(
         date +'%d' | \
-            command grep '[1-9][0-9]?' --only-matching --extended-regexp)"
+            command grep '[1-9][0-9]?' --only-matching --extended-regexp
+    )"
     local -ir week_day_number="$(date +'%u')"
     local source_path
     for source_path in "${!backupRotation_source_target_mappings[@]}"; do
         local target_path="$(
             echo "${backupRotation_source_target_mappings[$source_path]}" | \
-                command grep '^[^ ]+' --only-matching --extended-regexp)"
+                command grep '^[^ ]+' --only-matching --extended-regexp
+        )"
         local target_file_basepath="${target_path}/${backupRotation_daily_target_path}${backupRotation_target_daily_file_basename}"
         if (( backupRotation_month_day_number == month_day_number )); then
             target_file_basepath="${target_path}/${backupRotation_monthly_target_path}${backupRotation_target_monthly_file_basename}"
@@ -204,8 +207,8 @@ backupRotation_main() {
         else
             backupRotation_command+="${backupRotation_command} &>/dev/null"
         fi
-        local successful=false
         if eval "$backupRotation_command"; then
+            local successful=false
             if [[ "$backupRotation_encrypt_command" != '' ]]; then
                 if eval "$backupRotation_encrypt_command"; then
                     successful=true
@@ -215,11 +218,11 @@ backupRotation_main() {
             fi
             # Clean outdated daily backups.
             if [ -d "${target_path}/${backupRotation_daily_target_path}" ]; then
-                # shellcheck disable=SC2086
                 bl.logging.info Clearing old daily backups:
                 find \
                     "${target_path}/${backupRotation_daily_target_path}" \
                     -mtime +"$backupRotation_number_of_daily_retention_days"
+                # shellcheck disable=SC2086
                 find \
                     "${target_path}/${backupRotation_daily_target_path}" \
                     -mtime +"$backupRotation_number_of_daily_retention_days" \
@@ -227,11 +230,11 @@ backupRotation_main() {
             fi
             # Clean outdated weekly backups.
             if [ -d "${target_path}/${backupRotation_weekly_target_path}" ]; then
-                # shellcheck disable=SC2086
                 bl.logging.info Clearing old weekly backups:
                 find \
                     "${target_path}/${backupRotation_weekly_target_path}" \
                     -mtime +"$backupRotation_number_of_weekly_retention_days"
+                # shellcheck disable=SC2086
                 find \
                     "${target_path}/${backupRotation_weekly_target_path}" \
                     -mtime +"$backupRotation_number_of_weekly_retention_days" \
@@ -239,11 +242,11 @@ backupRotation_main() {
             fi
             # Clean outdated monthly backups.
             if [ -d "${target_path}/${backupRotation_monthly_target_path}" ]; then
-                # shellcheck disable=SC2086
                 bl.logging.info Clearing old monthly backups:
                 find \
                     "${target_path}/${backupRotation_monthly_target_path}" \
                     -mtime +"$backupRotation_number_of_monthly_retention_days"
+                # shellcheck disable=SC2086
                 find \
                     "${target_path}/${backupRotation_monthly_target_path}" \
                     -mtime +"$backupRotation_number_of_monthly_retention_days" \
@@ -256,29 +259,39 @@ backupRotation_main() {
             then
                 successful=false
             fi
+            local message="Source files in \"$source_path\" from node \"$backupRotation_name\" "
             if $successful; then
-                # shellcheck disable=SC2089
-                local message="Source files in \"$source_path\" from node \"$backupRotation_name\" successfully backed up to \"${target_file_basepath}${backupRotation_target_file_extension}\"."$'\n\nCurrent Backup structure:\n'
-                if bl.logging.is_enabled info; then
-                    echo -e "$message"
-                    tree -h -t "$target_path"
-                    du --human-readable --summarize "$target_path"
-                    df ./ --human-readable
-                fi
-                if hash msmtp && [[ "$backupRotation_sender_e_mail_address" != '' ]]; then
-                    local e_mail_address
-                    for e_mail_address in \
-                        $(echo "${backupRotation_source_target_mappings[$source_path]}" | \
-                            command grep ' .+$' --only-matching --extended-regexp)
-                    do
-                        msmtp --read-recipients <<EOF
+                message+="successfully backed up to \"${target_file_basepath}${backupRotation_target_file_extension}\"."
+            else
+                message+='should be backed up but has failed.'
+            fi
+            message+='\n\nCurrent Backup structure:\n'
+            if bl.logging.is_enabled info; then
+                echo -e "$message"
+                tree -h -t "$target_path"
+                du --human-readable --summarize "$target_path"
+                df ./ --human-readable
+            fi
+            if \
+                ( ! $successful || $backupRotation_send_success_e_mails ) && \
+                hash msmtp && \
+                [[ "$backupRotation_sender_e_mail_address" != '' ]]
+            then
+                local e_mail_address
+                for e_mail_address in $(
+                    echo "${backupRotation_source_target_mappings[$source_path]}" | \
+                        command grep ' .+$' --only-matching --extended-regexp
+                ); do
+                    msmtp --read-recipients <<EOF
 MIME-Version: 1.0
 Content-Type: text/html
 From: $backupRotation_sender_e_mail_address
 To: $e_mail_address
 Reply-To: $backupRotation_replier_e_mail_address
 Date: $(date)
-Subject: Backup was successful
+Subject: $(if $successful; then echo Backup was successful; else echo Backup has failed; fi)
+
+
 
 <!doctype html>
 <html>
@@ -309,8 +322,7 @@ $(
 </html>
 
 EOF
-                    done
-                fi
+                done
                 if [[ "$backupRotation_monitoring_url" != '' ]]; then
                     curl \
                         --data "{\"source\": \"$source_path\", \"target\": \"$target_path\", \"error\": false}" \
@@ -319,70 +331,6 @@ EOF
                         "$backupRotation_monitoring_url"
                 fi
             fi
-        fi
-        if ! $successful; then
-            local message="Source files in \"$source_path\" from node \"$backupRotation_name\" should be backed up but has failed."$'\n\nCurrent Backup structure:\n'
-            if bl.logging.is_enabled info; then
-                bl.logging.info "$message"
-                tree -h -t "$target_path"
-                du --human-readable --summarize "$target_path"
-                df ./ --human-readable
-            fi
-            if hash msmtp && [[ "$backupRotation_sender_e_mail_address" != '' ]]; then
-                local e_mail_address
-                for e_mail_address in \
-                    $(echo "${backupRotation_source_target_mappings[$source_path]}" | \
-                        command grep ' .+$' --only-matching --extended-regexp)
-                do
-                    msmtp --read-recipients <<EOF
-MIME-Version: 1.0
-Content-Type: text/html
-From: $backupRotation_sender_e_mail_address
-To: $e_mail_address
-Reply-To: $backupRotation_replier_e_mail_address
-Date: $(date)
-Subject: Backup has failed
-
-<!doctype html>
-<html>
-<head>
-</head>
-<body>
-    <p>$(
-        echo -e "$message" | \
-            sed --regexp-extended 's/"([^"]+)"/"<span style="font-weight:bold">\1<\/span>"/g' | \
-                sed --regexp-extended 's/(failed)/<span style="font-weight:bold">\1<\/span>/g'
-    )</p>
-    <p>
-        <pre>
-$(
-    tree -h -t "$target_path" | \
-        sed 's/</\&lt;/g' | \
-            sed 's/>/\&gt;/g' | \
-                sed "0,/${backupRotation_target_daily_file_basename}${backupRotation_target_file_extension}/s/${backupRotation_target_daily_file_basename}${backupRotation_target_file_extension}/<span style=\"font-weight:bold\">${backupRotation_target_daily_file_basename}${backupRotation_target_file_extension}<\\/span>/" | \
-                    sed "s/${backupRotation_target_weekly_file_basename}${backupRotation_target_file_extension}/<span style=\"font-weight:bold\">${backupRotation_target_weekly_file_basename}${backupRotation_target_file_extension}<\\/span>/" | \
-                        sed "s/${backupRotation_target_monthly_file_basename}${backupRotation_target_file_extension}/<span style=\"font-weight:bold\">${backupRotation_target_monthly_file_basename}${backupRotation_target_file_extension}<\\/span>/"
-)
-        </pre>
-    </p>
-    <p><pre>$(
-        du --human-readable --summarize "$target_path" && \
-        df ./ --human-readable
-    )</pre></p>
-</body>
-</html>
-
-EOF
-                done
-                if [[ "$backupRotation_monitoring_url" != '' ]]; then
-                    curl \
-                        --data "{\"source\": \"$source_path\", \"target\": \"$target_path\", \"error\": true}" \
-                        --header 'Content-Type: application/json' \
-                        --request PUT \
-                        "$backupRotation_monitoring_url"
-                fi
-            fi
-            exit 1
         fi
     done
 }
