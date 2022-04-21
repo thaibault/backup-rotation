@@ -36,7 +36,7 @@
     "lint:given": "shellcheck -x",
     "test": "bashlink-doctest --verbose ../../backupRotation",
     "update": "yarn version --patch && yarn publish",
-    "update:documentation": "documentationWebsite --log-level info"
+    "update:documentation": "documentation-website"
   },
   "dependencies": {
     "bashlink": "*"
