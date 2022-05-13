@@ -7,9 +7,9 @@
   resolved "https://registry.yarnpkg.com/@favware/skip-dependency/-/skip-dependency-1.1.1.tgz#f8cae15d883ffc0abc663b5eaaa711fcc64bb5c2"
 
 bashlink@*:
-  version "1.0.220"
-  resolved "https://registry.yarnpkg.com/bashlink/-/bashlink-1.0.220.tgz#aa0500a64ac6483ca5a38349249d9b5ae1d64b58"
-  integrity sha512-Ko2huLYFGYUtKVGtCru9BmAo4qSNfn6m7DR513OMawXSaORtcnzv0t4Jhxxhu6Vd45hYqxBuq0O3iKLc0n1SCw==
+  version "1.0.221"
+  resolved "https://registry.yarnpkg.com/bashlink/-/bashlink-1.0.221.tgz#59622d6399b145124538b8598d1495b3dd989831"
+  integrity sha512-vQTPq9/bHP+kJLRXbX2Xtp8cmfEWyg0eJgwgT3BUL7v36NUJ4QF5VxeR+KKzATKOETq/dwX5rywASZ+BlVhyZw==
 
 boolean@^3.0.1:
   version "3.2.0"
