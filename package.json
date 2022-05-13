@@ -3,9 +3,9 @@
   "version": "1.0.102",
   "license": "CC-BY-3.0",
   "description": "This script allows you to create a local or remote backup rotation for your files.",
-  "homepage": "https://torben.website/backupRotation",
+  "homepage": "https://torben.website/backup-rotation",
   "documentationWebsite": {
-    "name": "backupRotation",
+    "name": "backup-rotation",
     "trackingCode": "UA-40192634-13"
   },
   "keywords": [
@@ -16,25 +16,25 @@
     "synchronisation"
   ],
   "files": [
-    "backupRotation.timer",
-    "backupRotation.service"
+    "backup-rotation.timer",
+    "backup-rotation.service"
   ],
-  "main": "backupRotation.sh",
+  "main": "backup-rotation.sh",
   "bin": {
-    "backupRotation": "backupRotation.sh"
+    "backup-rotation": "backup-rotation.sh"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/thaibault/backupRotation"
+    "url": "https://github.com/thaibault/backup-rotation"
   },
   "scripts": {
     "clear": "rm --recursive apiDocumentation &>/dev/null || true",
-    "document": "mkdir --parents apiDocumentation/backupRotation/latest && bashlink-document backupRotation 1>apiDocumentation/backupRotation/latest/index.html",
-    "document:show": "bashlink-document backupRotation",
-    "document:show:error": "bashlink-document backupRotation 1>/dev/null",
+    "document": "mkdir --parents apiDocumentation/backup-rotation/latest && bashlink-document backup-rotation 1>apiDocumentation/backup-rotation/latest/index.html",
+    "document:show": "bashlink-document backup-rotation",
+    "document:show:error": "bashlink-document backup-rotation 1>/dev/null",
     "lint": "hash shellcheck && shellcheck -x *.sh || echo Please install \"shellcheck\". || true",
     "lint:given": "shellcheck -x",
-    "test": "bashlink-doctest --verbose ../../backupRotation",
+    "test": "bashlink-doctest --verbose ../../backup-rotation",
     "update": "yarn version --patch && yarn publish",
     "update:documentation": "documentation-website"
   },
