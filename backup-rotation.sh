@@ -181,25 +181,36 @@ backupRotation_main() {
         local target_file_basepath="${target_path}/${backupRotation_daily_target_path}${backupRotation_target_daily_file_basename}"
         if (( backupRotation_month_day_number == month_day_number )); then
             target_file_basepath="${target_path}/${backupRotation_monthly_target_path}${backupRotation_target_monthly_file_basename}"
+
+            link_target_file_path="${target_path}/${backupRotation_daily_target_path}${backupRotation_target_daily_file_basename}${backupRotation_target_file_extension}"
+            mkdir --parents "$(dirname "$link_target_file_path")"
+
             ln \
                 --force \
                 --symbolic \
                 "${target_file_basepath}${backupRotation_target_file_extension}" \
-                "${target_path}/${backupRotation_daily_target_path}${backupRotation_target_daily_file_basename}${backupRotation_target_file_extension}"
+                "$link_target_file_path"
             if (( backupRotation_week_day_number == week_day_number )); then
+                link_target_file_path="${target_path}/${backupRotation_weekly_target_path}${backupRotation_target_weekly_file_basename}${backupRotation_target_file_extension}"
+                mkdir --parents "$(dirname "$link_target_file_path")"
+
                 ln \
                     --force \
                     --symbolic \
                     "${target_file_basepath}${backupRotation_target_file_extension}" \
-                    "${target_path}/${backupRotation_weekly_target_path}${backupRotation_target_weekly_file_basename}${backupRotation_target_file_extension}"
+                    "$link_target_file_path"
             fi
         elif (( backupRotation_week_day_number == week_day_number )); then
             target_file_basepath="${target_path}/${backupRotation_weekly_target_path}${backupRotation_target_weekly_file_basename}"
+
+            link_target_file_path="${target_path}/${backupRotation_daily_target_path}${backupRotation_target_daily_file_basename}${backupRotation_target_file_extension}"
+            mkdir --parents "$(dirname "$link_target_file_path")"
+
             ln \
                 --force \
                 --symbolic \
                 "${target_file_basepath}${backupRotation_target_file_extension}" \
-                "${target_path}/${backupRotation_daily_target_path}${backupRotation_target_daily_file_basename}${backupRotation_target_file_extension}"
+                "$link_target_file_path"
         fi
         mkdir --parents "$(dirname "$target_file_basepath")"
         if bl.logging.is_enabled info; then
