@@ -34,8 +34,9 @@
     "document:show:error": "bashlink-document backup-rotation 1>/dev/null",
     "lint": "hash shellcheck && shellcheck -x *.sh || echo Please install \"shellcheck\". || true",
     "lint:given": "shellcheck -x",
+    "postversion": "git push --tags && yarn publish . --tag $npm_package_version && git push",
     "test": "bashlink-doctest --verbose ../../backup-rotation",
-    "update": "yarn version --patch && yarn publish",
+    "update": "yarn version --patch",
     "update:documentation": "documentation-website"
   },
   "dependencies": {
