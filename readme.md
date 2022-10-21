@@ -16,11 +16,6 @@ Project status
 [![npm](https://img.shields.io/npm/v/backup-rotation?color=%23d55e5d&label=npm%20package%20version&logoColor=%23d55e5d)](https://www.npmjs.com/package/backup-rotation)
 [![npm downloads](https://img.shields.io/npm/dy/backup-rotation.svg)](https://www.npmjs.com/package/backup-rotation)
 
-<!-- Too unstable yet
-[![dependencies](https://img.shields.io/david/thaibault/backup-rotation.svg)](https://david-dm.org/thaibault/backup-rotation)
-[![development dependencies](https://img.shields.io/david/dev/thaibault/backup-rotation.svg)](https://david-dm.org/thaibault/backup-rotation?type=dev)
-[![peer dependencies](https://img.shields.io/david/peer/thaibault/backup-rotation.svg)](https://david-dm.org/thaibault/backup-rotation?type=peer)
--->
 [![documentation website](https://img.shields.io/website-up-down-green-red/https/torben.website/backup-rotation.svg?label=documentation-website)](https://torben.website/backup-rotation)
 
 Use case
