@@ -1,3 +1,21 @@
+ursive "$backupRotation_bashlink_path"
+        # shellcheck disable=SC2154
+        [ -d "$bl_module_remote_module_cache_path" ] && \
+            rm --recursive "$bl_module_remote_module_cache_path"
+        # shellcheck disable=SC2154
+        bl.logging.error "$bl_exception_last_traceback"
+    }
+    [ -d "$backupRotation_bashlink_path" ] && \
+        rm --recursive "$backupRotation_bashlink_path"
+    # shellcheck disable=SC2154
+    [ -d "$bl_module_remote_module_cache_path" ] && \
+        rm --recursive "$bl_module_remote_module_cache_path"
+    # endregion
+fi
+# region vim modline
+# vim: set tabstop=4 shiftwidth=4 expandtab:
+# vim: foldmethod=marker foldmarker=region,endregion:
+# endregion
 #!/usr/bin/env bash
 # -*- coding: utf-8 -*-
 # region header
@@ -354,21 +372,4 @@ if bl.tools.is_main; then
     # region clean up
     {
         [ -d "$backupRotation_bashlink_path" ] && \
-            rm --recursive "$backupRotation_bashlink_path"
-        # shellcheck disable=SC2154
-        [ -d "$bl_module_remote_module_cache_path" ] && \
-            rm --recursive "$bl_module_remote_module_cache_path"
-        # shellcheck disable=SC2154
-        bl.logging.error "$bl_exception_last_traceback"
-    }
-    [ -d "$backupRotation_bashlink_path" ] && \
-        rm --recursive "$backupRotation_bashlink_path"
-    # shellcheck disable=SC2154
-    [ -d "$bl_module_remote_module_cache_path" ] && \
-        rm --recursive "$bl_module_remote_module_cache_path"
-    # endregion
-fi
-# region vim modline
-# vim: set tabstop=4 shiftwidth=4 expandtab:
-# vim: foldmethod=marker foldmarker=region,endregion:
-# endregion
+            rm --rec
