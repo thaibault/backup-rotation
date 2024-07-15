@@ -38,7 +38,3 @@ package() {
     install -D --mode 755 "${srcdir}/backupRotation.sh" \
         "${pkgdir}/usr/bin/backup-rotation"
 }
-# region vim modline
-# vim: set tabstop=4 shiftwidth=4 expandtab:
-# vim: foldmethod=marker foldmarker=region,endregion:
-# endregion

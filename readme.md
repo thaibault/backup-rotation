@@ -88,8 +88,3 @@ Configuration
 
 Simply create a text file under "/etc/backupRotation" and insert bash code
 which sets all options you want to overwrite.
-
-<!-- region vim modline
-vim: set tabstop=4 shiftwidth=4 expandtab:
-vim: foldmethod=marker foldmarker=region,endregion:
-endregion -->
