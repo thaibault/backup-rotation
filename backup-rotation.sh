@@ -21,21 +21,21 @@ elif [ -f /usr/lib/bashlink/module.sh ]; then
     # shellcheck disable=SC1091
     source /usr/lib/bashlink/module.sh
 else
-    declare -gr backupRotation_bashlink_path="$(
+    declare -gr BR_BASHLINK_PATH="$(
         mktemp --directory --suffix -backup-rotation-bashlink
     )/bashlink/"
-    mkdir "$backupRotation_bashlink_path"
+    mkdir "$BR_BASHLINK_PATH"
     if wget \
         https://torben.website/bashlink/data/distributionBundle/module.sh \
-        --output-document "${backupRotation_bashlink_path}module.sh"
+        --output-document "${BR_BASHLINK_PATH}module.sh"
     then
-        declare -gr bl_module_retrieve_remote_modules=true
+        declare -gr BL_MODULE_RETRIEVE_REMOTE_MODULES=true
         # shellcheck disable=SC1091
-        source "${backupRotation_bashlink_path}/module.sh"
-        rm --force --recursive "$backupRotation_bashlink_path"
+        source "${BR_BASHLINK_PATH}/module.sh"
+        rm --force --recursive "$BR_BASHLINK_PATH"
     else
         echo Needed bashlink library not found 1>&2
-        rm --force --recursive "$backupRotation_bashlink_path"
+        rm --force --recursive "$BR_BASHLINK_PATH"
         exit 1
     fi
 fi
@@ -45,7 +45,7 @@ bl.module.import bashlink.tools
 # endregion
 # region variables
 ## region documentation
-declare -gr backupRotation__documentation__='
+declare -gr BR__DOCUMENTATION__='
     This module provides generic service handling for each program supporting
     standard process signals. In general you only have to replace the string
     "generic" to you specific application name.
@@ -76,17 +76,17 @@ declare -gr backupRotation__documentation__='
 
     Furthermore you should create a file "/etc/backupRotation" to overwrite the
     following variables. You need to set values for
-    `backupRotation_source_target_mappings` at least:
+    `BR_SOURCE_TARGET_MAPPINGS` at least:
 
     ```bash
-        declare -A backupRotation_source_target_mappings=(
+        declare -A BR_SOURCE_TARGET_MAPPINGS=(
             ["SOURCE_URL1"]="TARGET_URL1 RECIPIENT_E_MAIL_ADDRESS"
             ["SOURCE_URL2"]="TARGET_URL2 RECIPIENT_E_MAIL_ADDRESS ANOTHER_RECIPIENT_E_MAIL_ADDRESS"
             ...
         )
     ```
 '
-declare -agr backupRotation__dependencies__=(
+declare -agr BR__DEPENDENCIES__=(
     bash
     date
     find
@@ -96,75 +96,75 @@ declare -agr backupRotation__dependencies__=(
 )
 ## endregion
 ## region default options
-declare -Ag backupRotation_source_target_mappings=()
+declare -Ag BR_SOURCE_TARGET_MAPPINGS=()
 
-declare -g backupRotation_send_success_e_mails=true
+declare -g BR_SEND_SUCCESS_E_MAILS=true
 # Disables by setting e-mail address to an empty string.
-declare -g backupRotation_sender_e_mail_address=''
-declare -g backupRotation_replier_e_mail_address="$backupRotation_sender_e_mail_address"
+declare -g BR_SENDER_E_MAIL_ADDRESS=''
+declare -g BR_REPLIER_E_MAIL_ADDRESS="$BR_SENDER_E_MAIL_ADDRESS"
 
-declare -g backupRotation_daily_target_path=daily/
-declare -g backupRotation_weekly_target_path=weekly/
-declare -g backupRotation_monthly_target_path=monthly/
+declare -g BR_DAILY_TARGET_PATH=daily/
+declare -g BR_WEEKLY_TARGET_PATH=weekly/
+declare -g BR_MONTHLY_TARGET_PATH=monthly/
 
-declare -g backupRotation_target_daily_file_basename="$(date +'%d-%m-%Y')"
-declare -g backupRotation_target_weekly_file_basename="$(
-    date +'%V.week-')${backupRotation_target_daily_file_basename}"
-declare -g backupRotation_target_monthly_file_basename="$backupRotation_target_daily_file_basename"
+declare -g BR_TARGET_DAILY_FILE_BASENAME="$(date +'%d-%m-%Y')"
+declare -g BR_TARGET_WEEKLY_FILE_BASENAME="$(
+    date +'%V.week-')${BR_TARGET_DAILY_FILE_BASENAME}"
+declare -g BR_TARGET_MONTHLY_FILE_BASENAME="$BR_TARGET_DAILY_FILE_BASENAME"
 
 # Should be in range 1 till 28
-declare -gi backupRotation_month_day_number=1
+declare -gi BR_MONTH_DAY_NUMBER=1
 # Should be in range 1 till 7
-declare -gi backupRotation_week_day_number=6 # Saturday
+declare -gi BR_WEEK_DAY_NUMBER=6 # Saturday
 
 # Creates daily backups for the last 14 days.
-declare -gi backupRotation_number_of_daily_retention_days=14
+declare -gi BR_NUMBER_OF_DAILY_RETENTION_DAYS=14
 # Creates weekly backups for the last 2 month.
-declare -gi backupRotation_number_of_weekly_retention_days=56
+declare -gi BR_NUMBER_OF_WEEKLY_RETENTION_DAYS=56
 # Creates monthly backups for the last year.
-declare -gi backupRotation_number_of_monthly_retention_days=365
+declare -gi BR_NUMBER_OF_MONTHLY_RETENTION_DAYS=365
 
-declare -g backupRotation_target_file_baseextension=.tar.gz
-declare -g backupRotation_target_file_extension="${backupRotation_target_file_baseextension}.gpg"
+declare -g BR_TARGET_FILE_BASE_EXTENSION=.tar.gz
+declare -g BR_TARGET_FILE_EXTENSION="${BR_TARGET_FILE_BASE_EXTENSION}.gpg"
 
-declare -g backupRotation_command_default_arguments='--acls --delete --devices --exclude=backup --exclude=done --exclude=log --exclude=migration --exclude=mockup --exclude=node_modules --exclude=preRendered --exclude=readme.md --exclude=.cache --exclude=.git --exclude=.local --exclude=.m2 --exclude=.node-gyp --exclude=.npm --exclude=.ssh --exclude=.yarn --executability --force --group --hard-links --human-readable --itemize-changes --links --max-delete=1 --owner --perms --progress --protect-args --specials --recursive --super --times --verbose --whole-file'
-declare -g backupRotation_command=''
-declare -g backupRotation_encrypt_command=''
+declare -g BR_COMMAND_DEFAULT_ARGUMENTS='--acls --delete --devices --exclude=backup --exclude=done --exclude=log --exclude=migration --exclude=mockup --exclude=node_modules --exclude=preRendered --exclude=readme.md --exclude=.cache --exclude=.git --exclude=.local --exclude=.m2 --exclude=.node-gyp --exclude=.npm --exclude=.ssh --exclude=.yarn --executability --force --group --hard-links --human-readable --itemize-changes --links --max-delete=1 --owner --perms --progress --protect-args --specials --recursive --super --times --verbose --whole-file'
+declare -g BR_COMMAND=''
+declare -g BR_ENCRYPT_COMMAND=''
 if [ -s /etc/backupRotationPassword ]; then
     # NOTE: Encrypt with per batch mode:
-    # cat /etc/backupRotationPassword | gpg --batch --decrypt --no-symkey-cache --output "${target_file_basepath}${backupRotation_target_file_baseextension}" --passphrase-fd 0 --pinentry-mode loopback "${target_file_basepath}${backupRotation_target_file_extension}"
+    # cat /etc/backupRotationPassword | gpg --batch --decrypt --no-symkey-cache --output "${target_file_basepath}${BR_TARGET_FILE_BASE_EXTENSION}" --passphrase-fd 0 --pinentry-mode loopback "${target_file_basepath}${BR_TARGET_FILE_EXTENSION}"
     # or interactively:
-    # gpg --decrypt --no-symkey-cache --output "${target_file_basepath}${backupRotation_target_file_baseextension}" "${target_file_basepath}${backupRotation_target_file_extension}"
-    backupRotation_encrypt_command='rm "${target_file_basepath}${backupRotation_target_file_extension}" &>/dev/null; cat /etc/backupRotationPassword | gpg --batch --no-symkey-cache --output "${target_file_basepath}${backupRotation_target_file_extension}" --passphrase-fd 0 --pinentry-mode loopback --symmetric "${target_file_basepath}${backupRotation_target_file_baseextension}" && rm "${target_file_basepath}${backupRotation_target_file_baseextension}"'
+    # gpg --decrypt --no-symkey-cache --output "${target_file_basepath}${BR_TARGET_FILE_BASE_EXTENSION}" "${target_file_basepath}${BR_TARGET_FILE_EXTENSION}"
+    BR_ENCRYPT_COMMAND='rm "${target_file_basepath}${BR_TARGET_FILE_EXTENSION}" &>/dev/null; cat /etc/backupRotationPassword | gpg --batch --no-symkey-cache --output "${target_file_basepath}${BR_TARGET_FILE_EXTENSION}" --passphrase-fd 0 --pinentry-mode loopback --symmetric "${target_file_basepath}${BR_TARGET_FILE_BASE_EXTENSION}" && rm "${target_file_basepath}${BR_TARGET_FILE_BASE_EXTENSION}"'
 fi
 
-declare -g backupRotation_post_run_command=''
+declare -g BR_POST_RUN_COMMAND=''
 # Folder to delete is the last command line argument.
-declare -g backupRotation_cleanup_command='rm --recursive --verbose'
-declare -g backupRotation_verbose=false
-declare -g backupRotation_monitoring_url=''
-declare -g backupRotation_name=NODE_NAME
+declare -g BR_CLEANUP_COMMAND='rm --recursive --verbose'
+declare -g BR_VERBOSE=false
+declare -g BR_MONITORING_URL=''
+declare -g BR_NAME=NODE_NAME
 ## endregion
 ## region load options if present and not empty
 if [ -s /etc/backupRotation ]; then
     # shellcheck disable=SC1091
     source /etc/backupRotation
 fi
-if [ "$backupRotation_encrypt_command" = '' ]; then
-    backupRotation_target_file_extension="$backupRotation_target_file_baseextension"
+if [ "$BR_ENCRYPT_COMMAND" = '' ]; then
+    BR_TARGET_FILE_EXTENSION="$BR_TARGET_FILE_BASEEXTENSION"
 fi
-if [ "$backupRotation_command" = '' ]; then
-    backupRotation_command="rsync $backupRotation_command_default_arguments "'"$source_path" "$target_file_basepath" && pushd "$(dirname "$target_file_basepath")" && tar --create --verbose --gzip --file "${target_file_basepath}${backupRotation_target_file_baseextension}" "$(basename "$target_file_basepath")"; popd && rm --recursive --verbose "$target_file_basepath"'
+if [ "$BR_COMMAND" = '' ]; then
+    BR_COMMAND="rsync $BR_COMMAND_DEFAULT_ARGUMENTS "'"$source_path" "$target_file_basepath" && pushd "$(dirname "$target_file_basepath")" && tar --create --verbose --gzip --file "${target_file_basepath}${BR_TARGET_FILE_BASE_EXTENSION}" "$(basename "$target_file_basepath")"; popd && rm --recursive --verbose "$target_file_basepath"'
 fi
 ## endregion
 # endregion
 # region controller
-alias backupRotation.main=backupRotation_main
-backupRotation_main() {
+alias br.main=br_main
+br_main() {
     local -r __documentation__='
         Get current month and week day number
     '
-    if $backupRotation_verbose; then
+    if $BR_VERBOSE; then
         bl.logging.set_level info
     fi
     local -ir month_day_number="$(
@@ -173,106 +173,106 @@ backupRotation_main() {
     )"
     local -ir week_day_number="$(date +'%u')"
     local source_path
-    for source_path in "${!backupRotation_source_target_mappings[@]}"; do
+    for source_path in "${!BR_SOURCE_TARGET_MAPPINGS[@]}"; do
         local target_path="$(
-            echo "${backupRotation_source_target_mappings[$source_path]}" | \
+            echo "${BR_SOURCE_TARGET_MAPPINGS[$source_path]}" | \
                 command grep '^[^ ]+' --only-matching --extended-regexp
         )"
-        local target_file_basepath="${target_path}/${backupRotation_daily_target_path}${backupRotation_target_daily_file_basename}"
-        if (( backupRotation_month_day_number == month_day_number )); then
-            target_file_basepath="${target_path}/${backupRotation_monthly_target_path}${backupRotation_target_monthly_file_basename}"
+        local target_file_basepath="${target_path}/${BR_DAILY_TARGET_PATH}${BR_TARGET_DAILY_FILE_BASENAME}"
+        if (( BR_MONTH_DAY_NUMBER == month_day_number )); then
+            target_file_basepath="${target_path}/${BR_MONTHLY_TARGET_PATH}${BR_TARGET_MONTHLY_FILE_BASENAME}"
 
-            link_target_file_path="${target_path}/${backupRotation_daily_target_path}${backupRotation_target_daily_file_basename}${backupRotation_target_file_extension}"
+            link_target_file_path="${target_path}/${BR_DAILY_TARGET_PATH}${BR_TARGET_DAILY_FILE_BASENAME}${BR_TARGET_FILE_EXTENSION}"
             mkdir --parents "$(dirname "$link_target_file_path")"
 
             ln \
                 --force \
                 --symbolic \
-                "${target_file_basepath}${backupRotation_target_file_extension}" \
+                "${target_file_basepath}${BR_TARGET_FILE_EXTENSION}" \
                 "$link_target_file_path"
-            if (( backupRotation_week_day_number == week_day_number )); then
-                link_target_file_path="${target_path}/${backupRotation_weekly_target_path}${backupRotation_target_weekly_file_basename}${backupRotation_target_file_extension}"
+            if (( BR_WEEK_DAY_NUMBER == week_day_number )); then
+                link_target_file_path="${target_path}/${BR_WEEKLY_TARGET_PATH}${BR_TARGET_WEEKLY_FILE_BASENAME}${BR_TARGET_FILE_EXTENSION}"
                 mkdir --parents "$(dirname "$link_target_file_path")"
 
                 ln \
                     --force \
                     --symbolic \
-                    "${target_file_basepath}${backupRotation_target_file_extension}" \
+                    "${target_file_basepath}${BR_TARGET_FILE_EXTENSION}" \
                     "$link_target_file_path"
             fi
-        elif (( backupRotation_week_day_number == week_day_number )); then
-            target_file_basepath="${target_path}/${backupRotation_weekly_target_path}${backupRotation_target_weekly_file_basename}"
+        elif (( BR_WEEK_DAY_NUMBER == week_day_number )); then
+            target_file_basepath="${target_path}/${BR_WEEKLY_TARGET_PATH}${BR_TARGET_WEEKLY_FILE_BASENAME}"
 
-            link_target_file_path="${target_path}/${backupRotation_daily_target_path}${backupRotation_target_daily_file_basename}${backupRotation_target_file_extension}"
+            link_target_file_path="${target_path}/${BR_DAILY_TARGET_PATH}${BR_TARGET_DAILY_FILE_BASENAME}${BR_TARGET_FILE_EXTENSION}"
             mkdir --parents "$(dirname "$link_target_file_path")"
 
             ln \
                 --force \
                 --symbolic \
-                "${target_file_basepath}${backupRotation_target_file_extension}" \
+                "${target_file_basepath}${BR_TARGET_FILE_EXTENSION}" \
                 "$link_target_file_path"
         fi
         mkdir --parents "$(dirname "$target_file_basepath")"
         if bl.logging.is_enabled info; then
-            echo "Running \"${backupRotation_command}\"."
+            echo "Running \"${BR_COMMAND}\"."
         else
-            backupRotation_command+="${backupRotation_command} &>/dev/null"
+            BR_COMMAND+="${BR_COMMAND} &>/dev/null"
         fi
-        if eval "$backupRotation_command"; then
+        if eval "$BR_COMMAND"; then
             local successful=false
-            if [[ "$backupRotation_encrypt_command" != '' ]]; then
-                if eval "$backupRotation_encrypt_command"; then
+            if [[ "$BR_ENCRYPT_COMMAND" != '' ]]; then
+                if eval "$BR_ENCRYPT_COMMAND"; then
                     successful=true
                 fi
             else
                 successful=true
             fi
             # Clean outdated daily backups.
-            if [ -d "${target_path}/${backupRotation_daily_target_path}" ]; then
+            if [ -d "${target_path}/${BR_DAILY_TARGET_PATH}" ]; then
                 bl.logging.info Clearing old daily backups:
                 find \
-                    "${target_path}/${backupRotation_daily_target_path}" \
-                    -mtime +"$backupRotation_number_of_daily_retention_days"
+                    "${target_path}/${BR_DAILY_TARGET_PATH}" \
+                    -mtime +"$BR_NUMBER_OF_DAILY_RETENTION_DAYS"
                 # shellcheck disable=SC2086
                 find \
-                    "${target_path}/${backupRotation_daily_target_path}" \
-                    -mtime +"$backupRotation_number_of_daily_retention_days" \
-                    -exec $backupRotation_cleanup_command {} \;
+                    "${target_path}/${BR_DAILY_TARGET_PATH}" \
+                    -mtime +"$BR_NUMBER_OF_DAILY_RETENTION_DAYS" \
+                    -exec $BR_CLEANUP_COMMAND {} \;
             fi
             # Clean outdated weekly backups.
-            if [ -d "${target_path}/${backupRotation_weekly_target_path}" ]; then
+            if [ -d "${target_path}/${BR_WEEKLY_TARGET_PATH}" ]; then
                 bl.logging.info Clearing old weekly backups:
                 find \
-                    "${target_path}/${backupRotation_weekly_target_path}" \
-                    -mtime +"$backupRotation_number_of_weekly_retention_days"
+                    "${target_path}/${BR_WEEKLY_TARGET_PATH}" \
+                    -mtime +"$BR_NUMBER_OF_WEEKLY_RETENTION_DAYS"
                 # shellcheck disable=SC2086
                 find \
-                    "${target_path}/${backupRotation_weekly_target_path}" \
-                    -mtime +"$backupRotation_number_of_weekly_retention_days" \
-                    -exec $backupRotation_cleanup_command {} \;
+                    "${target_path}/${BR_WEEKLY_TARGET_PATH}" \
+                    -mtime +"$BR_NUMBER_OF_WEEKLY_RETENTION_DAYS" \
+                    -exec $BR_CLEANUP_COMMAND {} \;
             fi
             # Clean outdated monthly backups.
-            if [ -d "${target_path}/${backupRotation_monthly_target_path}" ]; then
+            if [ -d "${target_path}/${BR_MONTHLY_TARGET_PATH}" ]; then
                 bl.logging.info Clearing old monthly backups:
                 find \
-                    "${target_path}/${backupRotation_monthly_target_path}" \
-                    -mtime +"$backupRotation_number_of_monthly_retention_days"
+                    "${target_path}/${BR_MONTHLY_TARGET_PATH}" \
+                    -mtime +"$BR_NUMBER_OF_MONTHLY_RETENTION_DAYS"
                 # shellcheck disable=SC2086
                 find \
-                    "${target_path}/${backupRotation_monthly_target_path}" \
-                    -mtime +"$backupRotation_number_of_monthly_retention_days" \
-                    -exec $backupRotation_cleanup_command {} \;
+                    "${target_path}/${BR_MONTHLY_TARGET_PATH}" \
+                    -mtime +"$BR_NUMBER_OF_MONTHLY_RETENTION_DAYS" \
+                    -exec $BR_CLEANUP_COMMAND {} \;
             fi
             if \
                 $successful && \
-                [[ "$backupRotation_post_run_command" != '' ]] && \
-                ! eval "$backupRotation_post_run_command"
+                [[ "$BR_POST_RUN_COMMAND" != '' ]] && \
+                ! eval "$BR_POST_RUN_COMMAND"
             then
                 successful=false
             fi
-            local message="Source files in \"$source_path\" from node \"$backupRotation_name\" "
+            local message="Source files in \"$source_path\" from node \"$BR_NAME\" "
             if $successful; then
-                message+="successfully backed up to \"${target_file_basepath}${backupRotation_target_file_extension}\"."
+                message+="successfully backed up to \"${target_file_basepath}${BR_TARGET_FILE_EXTENSION}\"."
             else
                 message+='should be backed up but has failed.'
             fi
@@ -284,21 +284,21 @@ backupRotation_main() {
                 df ./ --human-readable
             fi
             if \
-                ( ! $successful || $backupRotation_send_success_e_mails ) && \
+                ( ! $successful || $BR_SEND_SUCCESS_E_MAILS ) && \
                 hash msmtp && \
-                [[ "$backupRotation_sender_e_mail_address" != '' ]]
+                [[ "$BR_SENDER_E_MAIL_ADDRESS" != '' ]]
             then
                 local e_mail_address
                 for e_mail_address in $(
-                    echo "${backupRotation_source_target_mappings[$source_path]}" | \
+                    echo "${BR_SOURCE_TARGET_MAPPINGS[$source_path]}" | \
                         command grep ' .+$' --only-matching --extended-regexp
                 ); do
                     msmtp --read-recipients <<EOF
 MIME-Version: 1.0
 Content-Type: text/html
-From: $backupRotation_sender_e_mail_address
+From: $BR_SENDER_E_MAIL_ADDRESS
 To: $e_mail_address
-Reply-To: $backupRotation_replier_e_mail_address
+Reply-To: $BR_REPLIER_E_MAIL_ADDRESS
 Date: $(date)
 Subject: $(if $successful; then echo Backup was successful; else echo Backup has failed; fi)
 
@@ -319,9 +319,9 @@ $(
     tree -h -t "$target_path" | \
         sed 's/</\&lt;/g' | \
             sed 's/>/\&gt;/g' | \
-                sed "0,/${backupRotation_target_daily_file_basename}${backupRotation_target_file_extension}/s/${backupRotation_target_daily_file_basename}${backupRotation_target_file_extension}/<span style=\"font-weight:bold\">${backupRotation_target_daily_file_basename}${backupRotation_target_file_extension}<\\/span>/" | \
-                    sed "s/${backupRotation_target_weekly_file_basename}${backupRotation_target_file_extension}/<span style=\"font-weight:bold\">${backupRotation_target_weekly_file_basename}${backupRotation_target_file_extension}<\\/span>/" | \
-                        sed "s/${backupRotation_target_monthly_file_basename}${backupRotation_target_file_extension}/<span style=\"font-weight:bold\">${backupRotation_target_monthly_file_basename}${backupRotation_target_file_extension}<\\/span>/"
+                sed "0,/${BR_TARGET_DAILY_FILE_BASENAME}${BR_TARGET_FILE_EXTENSION}/s/${BR_TARGET_DAILY_FILE_BASENAME}${BR_TARGET_FILE_EXTENSION}/<span style=\"font-weight:bold\">${BR_TARGET_DAILY_FILE_BASENAME}${BR_TARGET_FILE_EXTENSION}<\\/span>/" | \
+                    sed "s/${BR_TARGET_WEEKLY_FILE_BASENAME}${BR_TARGET_FILE_EXTENSION}/<span style=\"font-weight:bold\">${BR_TARGET_WEEKLY_FILE_BASENAME}${BR_TARGET_FILE_EXTENSION}<\\/span>/" | \
+                        sed "s/${BR_TARGET_MONTHLY_FILE_BASENAME}${BR_TARGET_FILE_EXTENSION}/<span style=\"font-weight:bold\">${BR_TARGET_MONTHLY_FILE_BASENAME}${BR_TARGET_FILE_EXTENSION}<\\/span>/"
 )
         </pre>
     </p>
@@ -334,12 +334,12 @@ $(
 
 EOF
                 done
-                if [[ "$backupRotation_monitoring_url" != '' ]]; then
+                if [[ "$BR_MONITORING_URL" != '' ]]; then
                     curl \
                         --data "{\"source\": \"$source_path\", \"target\": \"$target_path\", \"error\": false}" \
                         --header 'Content-Type: application/json' \
                         --request PUT \
-                        "$backupRotation_monitoring_url"
+                        "$BR_MONITORING_URL"
                 fi
             fi
         fi
@@ -349,23 +349,23 @@ EOF
 if bl.tools.is_main; then
     bl.exception.activate
     bl.exception.try
-        backupRotation.main "$@"
+        br.main "$@"
     bl.exception.catch_single
     # region clean up
     {
-        [ -d "$backupRotation_bashlink_path" ] && \
-            rm --recursive "$backupRotation_bashlink_path"
+        [ -d "$BR_BASHLINK_PATH" ] && \
+            rm --recursive "$BR_BASHLINK_PATH"
         # shellcheck disable=SC2154
-        [ -d "$bl_module_remote_module_cache_path" ] && \
-            rm --recursive "$bl_module_remote_module_cache_path"
+        [ -d "$BL_MODULE_REMOTE_MODULE_CACHE_PATH" ] && \
+            rm --recursive "$BL_MODULE_REMOTE_MODULE_CACHE_PATH"
         # shellcheck disable=SC2154
-        bl.logging.error "$bl_exception_last_traceback"
+        bl.logging.error "$BL_EXCEPTION_LAST_TRACEBACK"
     }
-    [ -d "$backupRotation_bashlink_path" ] && \
-        rm --recursive "$backupRotation_bashlink_path"
+    [ -d "$BR_BASHLINK_PATH" ] && \
+        rm --recursive "$BR_BASHLINK_PATH"
     # shellcheck disable=SC2154
-    [ -d "$bl_module_remote_module_cache_path" ] && \
-        rm --recursive "$bl_module_remote_module_cache_path"
+    [ -d "$BL_MODULE_REMOTE_MODULE_CACHE_PATH" ] && \
+        rm --recursive "$BL_MODULE_REMOTE_MODULE_CACHE_PATH"
     # endregion
 fi
 # region vim modline
