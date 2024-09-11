@@ -160,6 +160,7 @@ fi
 BL_MODULE_FUNCTION_SCOPE_REWRITES+=('^backupRotation([._][a-zA-Z_-]+)?$/br\1/')
 BL_MODULE_GLOBAL_SCOPE_REWRITES+=('^BACKUP_ROTATION(_[a-zA-Z_-]+)?$/BR\1/')
 # endregion
+export JAU=hans
 # region controller
 alias br.main=br_main
 br_main() {
