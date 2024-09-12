@@ -9,8 +9,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "backup-rotation@workspace:."
   dependencies:
-    bashlink: "npm:^1.0.249"
-    documentation-website: "npm:^1.0.328"
+    bashlink: "npm:^1.0.252"
+    documentation-website: "npm:^1.0.332"
     shellcheck: "npm:^3.0.0"
   bin:
     backup-rotation: backup-rotation.sh
@@ -24,13 +24,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bashlink@npm:^1.0.249":
-  version: 1.0.249
-  resolution: "bashlink@npm:1.0.249"
+"bashlink@npm:^1.0.252":
+  version: 1.0.252
+  resolution: "bashlink@npm:1.0.252"
   bin:
     bashlink-doctest: doctest.sh
     bashlink-document: documentation.sh
-  checksum: 10c0/86e4db19688a551bbd3ac007228745255dcba9d67e65afa339591c0a117121846878a1d5df88eb75a4468c48919e487de10523923bac28efb3a77d9439e1c964
+  checksum: 10c0/57ef53ad3629a089dc69e832d1b053b290daebb332a1f543b0b2c01d960089f1642f901104b970661df8f7a2aa089a60f373cfef5245ddc2ce1a7f3eed31c9f5
   languageName: node
   linkType: hard
 
@@ -198,12 +198,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"documentation-website@npm:^1.0.328":
-  version: 1.0.328
-  resolution: "documentation-website@npm:1.0.328"
+"documentation-website@npm:^1.0.332":
+  version: 1.0.332
+  resolution: "documentation-website@npm:1.0.332"
   bin:
     documentation-website: build/deploy.js
-  checksum: 10c0/ed196f581a4ec055eb0283dcb89712af7d23ff2d6dece96a2a5140e5d93551cfb30366d64c47ba8604b7d168ae074dafebf30f21f4c5b23b5d3d30ca547aca00
+  checksum: 10c0/7f51c5a27b4afe0ad209723f050335c698dca61353da810a2079cdb64f1c5d5d60114a9b0a85b1c430c4a213545c857cca03ec0875f004b388d6303c5a410e15
   languageName: node
   linkType: hard
 
