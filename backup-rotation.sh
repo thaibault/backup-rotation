@@ -151,7 +151,7 @@ if [ -s /etc/backupRotation ]; then
     source /etc/backupRotation
 fi
 if [ "$BR_ENCRYPT_COMMAND" = '' ]; then
-    BR_TARGET_FILE_EXTENSION="$BR_TARGET_FILE_BASEEXTENSION"
+    BR_TARGET_FILE_EXTENSION="$BR_TARGET_FILE_BASE_EXTENSION"
 fi
 if [ "$BR_COMMAND" = '' ]; then
     BR_COMMAND="rsync $BR_COMMAND_DEFAULT_ARGUMENTS "'"$source_path" "$target_file_basepath" && pushd "$(dirname "$target_file_basepath")" && tar --create --verbose --gzip --file "${target_file_basepath}${BR_TARGET_FILE_BASE_EXTENSION}" "$(basename "$target_file_basepath")"; popd && rm --recursive --verbose "$target_file_basepath"'
