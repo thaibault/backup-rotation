@@ -11,7 +11,7 @@ __metadata:
   dependencies:
     bashlink: "npm:^1.0.259"
     documentation-website: "npm:^1.0.343"
-    shellcheck: "npm:^3.0.0"
+    shellcheck: "npm:^3.1.0"
   bin:
     backup-rotation: backup-rotation.sh
   languageName: unknown
@@ -594,16 +594,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"shellcheck@npm:^3.0.0":
-  version: 3.0.0
-  resolution: "shellcheck@npm:3.0.0"
+"shellcheck@npm:^3.1.0":
+  version: 3.1.0
+  resolution: "shellcheck@npm:3.1.0"
   dependencies:
     decompress: "npm:^4.2.1"
     envalid: "npm:^8.0.0"
     global-agent: "npm:^3.0.0"
   bin:
     shellcheck: bin/shellcheck.js
-  checksum: 10c0/8c4a66b4fe0307c6cc6d9cdf27b66888bfae00d77ceca178a15b26bf4b099265364d7ff6460f05beb124ccdb762d7c4f11773b231c5e06107bdc9970cf551c49
+  checksum: 10c0/721253e0f3e64cb8c4793c06f0d478f7d728b675579640030240c370bc31984a7aa7807a48f476efe4ce60fdf86ce6df8ad68006a2884ce72df54dc547665bc5
   languageName: node
   linkType: hard
 

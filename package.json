@@ -41,7 +41,7 @@
   },
   "devDependencies": {
     "documentation-website": "^1.0.343",
-    "shellcheck": "^3.0.0"
+    "shellcheck": "^3.1.0"
   },
   "engines": {
     "node": ">=20",
