@@ -1,6 +1,6 @@
 {
   "name": "backup-rotation",
-  "version": "1.0.124",
+  "version": "1.0.125",
   "license": "CC-BY-3.0",
   "description": "This script allows you to create a local or remote backup rotation for your files.",
   "homepage": "https://torben.website/backup-rotation",
