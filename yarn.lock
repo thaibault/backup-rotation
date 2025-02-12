@@ -10,7 +10,7 @@ __metadata:
   resolution: "backup-rotation@workspace:."
   dependencies:
     bashlink: "npm:^1.0.259"
-    documentation-website: "npm:^1.0.342"
+    documentation-website: "npm:^1.0.343"
     shellcheck: "npm:^3.0.0"
   bin:
     backup-rotation: backup-rotation.sh
@@ -198,12 +198,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"documentation-website@npm:^1.0.342":
-  version: 1.0.342
-  resolution: "documentation-website@npm:1.0.342"
+"documentation-website@npm:^1.0.343":
+  version: 1.0.343
+  resolution: "documentation-website@npm:1.0.343"
   bin:
     documentation-website: build/deploy.js
-  checksum: 10c0/e10ebb3b86b7f3c73ba862baef43877b6c5495396edabf7120856a4a155b0d38293f26f93ca7ed9436c73c5c7c70dbcc738a26e1bb4f6a35fd5d4e58d6cc4f0d
+  checksum: 10c0/64663cfa5af0e274cbc5b3011b216a9cf5e8a958822fffdd9c6d6393d18e7edb209fcaa5825f4ee16fcef9ec7ed6bf083cf35a7fbe9a2dc37a14f2acd0d09032
   languageName: node
   linkType: hard
 
