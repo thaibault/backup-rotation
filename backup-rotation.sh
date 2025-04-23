@@ -12,6 +12,7 @@
 # 3.0 unported license. See https://creativecommons.org/licenses/by/3.0/deed.de
 # endregion
 # shellcheck disable=SC1004,SC2016,SC2034,SC2155
+shopt -s expand_aliases
 # region import
 alias br.download=br_download
 br_download() {
@@ -32,15 +33,7 @@ elif [ -f "/usr/lib/bashlink/module.sh" ]; then
     # shellcheck disable=SC1091
     source "/usr/lib/bashlink/module.sh"
 else
-    declare -g BR_CACHE_PATH="$(
-        echo "$@" | \
-            sed \
-                --regexp-extended \
-                's/(^| )(-o|--cache-path)(=| +)(.+[^ ])($| +-)/\4/'
-    )"
-    [ "$BR_CACHE_PATH" = "$*" ] && \
-        BR_CACHE_PATH=backupRotationInstallCache
-    BR_CACHE_PATH="${BR_CACHE_PATH%/}/"
+    declare -g BR_CACHE_PATH=/tmp/backupRotationInstallCache/
     declare -gr BL_MODULE_REMOTE_MODULE_CACHE_PATH="${BR_CACHE_PATH}bashlink"
     mkdir --parents "$BL_MODULE_REMOTE_MODULE_CACHE_PATH"
     declare -gr BL_MODULE_RETRIEVE_REMOTE_MODULES=true
