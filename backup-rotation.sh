@@ -173,7 +173,6 @@ fi
 ## endregion
 BL_MODULE_FUNCTION_SCOPE_REWRITES+=('^backupRotation([._][a-zA-Z_-]+)?$/br\1/')
 BL_MODULE_GLOBAL_SCOPE_REWRITES+=('^BACKUP_ROTATION(_[a-zA-Z_-]+)?$/BR\1/')
-TODO=HANS
 # endregion
 # region controller
 alias br.main=br_main
@@ -370,16 +369,16 @@ if bl.tools.is_main; then
     bl.exception.catch_single
     # region clean up
     {
-        [ -d "$BR_BASHLINK_PATH" ] && \
-            rm --recursive "$BR_BASHLINK_PATH"
+        [ -f "$BL_MODULE_NAME_RESOLVING_CACHE_FILE_PATH" ] && \
+            rm "$BL_MODULE_NAME_RESOLVING_CACHE_FILE_PATH"
         # shellcheck disable=SC2154
         [ -d "$BL_MODULE_REMOTE_MODULE_CACHE_PATH" ] && \
             rm --recursive "$BL_MODULE_REMOTE_MODULE_CACHE_PATH"
         # shellcheck disable=SC2154
         bl.logging.error "$BL_EXCEPTION_LAST_TRACEBACK"
     }
-    [ -d "$BR_BASHLINK_PATH" ] && \
-        rm --recursive "$BR_BASHLINK_PATH"
+    [ -f "$BL_MODULE_NAME_RESOLVING_CACHE_FILE_PATH" ] && \
+        rm "$BL_MODULE_NAME_RESOLVING_CACHE_FILE_PATH"
     # shellcheck disable=SC2154
     [ -d "$BL_MODULE_REMOTE_MODULE_CACHE_PATH" ] && \
         rm --recursive "$BL_MODULE_REMOTE_MODULE_CACHE_PATH"
