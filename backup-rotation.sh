@@ -122,8 +122,7 @@ declare -g BR_WEEKLY_TARGET_PATH=weekly/
 declare -g BR_MONTHLY_TARGET_PATH=monthly/
 
 declare -g BR_TARGET_DAILY_FILE_BASENAME="$(date +'%d-%m-%Y')"
-declare -g BR_TARGET_WEEKLY_FILE_BASENAME="$(
-    date +'%V.week-')${BR_TARGET_DAILY_FILE_BASENAME}"
+declare -g BR_TARGET_WEEKLY_FILE_BASENAME="$(date +'%V.week-')${BR_TARGET_DAILY_FILE_BASENAME}"
 declare -g BR_TARGET_MONTHLY_FILE_BASENAME="$BR_TARGET_DAILY_FILE_BASENAME"
 
 # Should be in range 1 till 28
