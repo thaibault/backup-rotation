@@ -1,12 +1,9 @@
 [Unit]
 Description=Run backup-rotation.service every 24 hours
-Conflicts=shutdown.target reboot.target halt.target
-Wants=network-online.target
-After=network.target network-online.target
 
 [Timer]
 Unit=backup-rotation.service
-OnCalendar=daily 02:00
+OnCalendar=*-*-* 02:00
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=timers.target
