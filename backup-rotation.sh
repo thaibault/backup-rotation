@@ -243,20 +243,22 @@ br_main() {
                 successful=true
             fi
             # Clean outdated daily backups.
-            if [ -d "${target_path}/${BR_DAILY_TARGET_PATH}" ]; then
-                bl.logging.info Clearing old daily backups:
+            local path="${target_path}/${BR_DAILY_TARGET_PATH}"
+            if [ -d "$path" ]; then
+                bl.logging.info Clearing old daily backups in \"${path}\":
                 find \
-                    "${target_path}/${BR_DAILY_TARGET_PATH}" \
+                    "$path" \
                     -mtime +"$BR_NUMBER_OF_DAILY_RETENTION_DAYS"
                 # shellcheck disable=SC2086
                 find \
-                    "${target_path}/${BR_DAILY_TARGET_PATH}" \
+                    "$path" \
                     -mtime +"$BR_NUMBER_OF_DAILY_RETENTION_DAYS" \
                     -exec $BR_CLEANUP_COMMAND {} \;
             fi
             # Clean outdated weekly backups.
-            if [ -d "${target_path}/${BR_WEEKLY_TARGET_PATH}" ]; then
-                bl.logging.info Clearing old weekly backups:
+            path="${target_path}/${BR_WEEKLY_TARGET_PATH}"
+            if [ -d "$path" ]; then
+                bl.logging.info Clearing old weekly backups \"${$path}\":
                 find \
                     "${target_path}/${BR_WEEKLY_TARGET_PATH}" \
                     -mtime +"$BR_NUMBER_OF_WEEKLY_RETENTION_DAYS"
@@ -267,14 +269,15 @@ br_main() {
                     -exec $BR_CLEANUP_COMMAND {} \;
             fi
             # Clean outdated monthly backups.
-            if [ -d "${target_path}/${BR_MONTHLY_TARGET_PATH}" ]; then
-                bl.logging.info Clearing old monthly backups:
+            path="${target_path}/${BR_MONTHLY_TARGET_PATH}"
+            if [ -d "$path" ]; then
+                bl.logging.info Clearing old monthly backups in \"${path}\":
                 find \
-                    "${target_path}/${BR_MONTHLY_TARGET_PATH}" \
+                    "$path" \
                     -mtime +"$BR_NUMBER_OF_MONTHLY_RETENTION_DAYS"
                 # shellcheck disable=SC2086
                 find \
-                    "${target_path}/${BR_MONTHLY_TARGET_PATH}" \
+                    "$path" \
                     -mtime +"$BR_NUMBER_OF_MONTHLY_RETENTION_DAYS" \
                     -exec $BR_CLEANUP_COMMAND {} \;
             fi
@@ -285,7 +288,7 @@ br_main() {
             then
                 successful=false
             fi
-            local message="Source files in \"$source_path\" from node \"$BR_NAME\" "
+            local message="Source files in \"${source_path}\" from node \"${BR_NAME}\" "
             if $successful; then
                 message+="successfully backed up to \"${target_file_basepath}${BR_TARGET_FILE_EXTENSION}\"."
             else
