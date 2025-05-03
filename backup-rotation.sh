@@ -258,7 +258,7 @@ br_main() {
             # Clean outdated weekly backups.
             path="${target_path}/${BR_WEEKLY_TARGET_PATH}"
             if [ -d "$path" ]; then
-                bl.logging.info Clearing old weekly backups \"${$path}\":
+                bl.logging.info Clearing old weekly backups \"${path}\":
                 find \
                     "${target_path}/${BR_WEEKLY_TARGET_PATH}" \
                     -mtime +"$BR_NUMBER_OF_WEEKLY_RETENTION_DAYS"
