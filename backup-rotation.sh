@@ -144,7 +144,7 @@ declare -g BR_COMMAND_DEFAULT_ARGUMENTS='--acls --delete --devices --exclude=bac
 declare -g BR_COMMAND=''
 declare -g BR_ENCRYPT_COMMAND=''
 if [ -s /etc/backupRotationPassword ]; then
-    # NOTE: Encrypt with per batch mode:
+    # NOTE: Decrypt via batch mode:
     # cat /etc/backupRotationPassword | gpg --batch --decrypt --no-symkey-cache --output "${target_file_basepath}${BR_TARGET_FILE_BASE_EXTENSION}" --passphrase-fd 0 --pinentry-mode loopback "${target_file_basepath}${BR_TARGET_FILE_EXTENSION}"
     # or interactively:
     # gpg --decrypt --no-symkey-cache --output "${target_file_basepath}${BR_TARGET_FILE_BASE_EXTENSION}" "${target_file_basepath}${BR_TARGET_FILE_EXTENSION}"
