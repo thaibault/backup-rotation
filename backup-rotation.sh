@@ -144,7 +144,7 @@ declare -g BR_COMMAND_DEFAULT_ARGUMENTS='--acls --delete --devices --exclude=bac
 declare -g BR_COMMAND=''
 declare -g BR_ENCRYPT_COMMAND=''
 if [ -s /etc/backupRotationPassword ]; then
-    # NOTE: Encrypt with per batch mode:
+    # NOTE: Decrypt via batch mode:
     # cat /etc/backupRotationPassword | gpg --batch --decrypt --no-symkey-cache --output "${target_file_basepath}${BR_TARGET_FILE_BASE_EXTENSION}" --passphrase-fd 0 --pinentry-mode loopback "${target_file_basepath}${BR_TARGET_FILE_EXTENSION}"
     # or interactively:
     # gpg --decrypt --no-symkey-cache --output "${target_file_basepath}${BR_TARGET_FILE_BASE_EXTENSION}" "${target_file_basepath}${BR_TARGET_FILE_EXTENSION}"
@@ -281,19 +281,26 @@ br_main() {
                     -mtime +"$BR_NUMBER_OF_MONTHLY_RETENTION_DAYS" \
                     -exec $BR_CLEANUP_COMMAND {} \;
             fi
-            if \
-                $successful && \
-                [[ "$BR_POST_RUN_COMMAND" != '' ]] && \
-                ! eval "$BR_POST_RUN_COMMAND"
-            then
-                successful=false
-            fi
+
             local message="Source files in \"${source_path}\" from node \"${BR_NAME}\" "
             if $successful; then
                 message+="successfully backed up to \"${target_file_basepath}${BR_TARGET_FILE_EXTENSION}\"."
             else
                 message+='should be backed up but has failed.'
             fi
+
+            if \
+                $successful && \
+                [[ "$BR_POST_RUN_COMMAND" != '' ]]
+            then
+                if eval "$BR_POST_RUN_COMMAND"; then
+                    message+='\n\nPost run command was successful.'
+                else
+                    message+='\n\nPost run command was not successful!'
+                    successful=false
+                fi
+            fi
+
             message+='\n\nCurrent Backup structure:\n'
             if bl.logging.is_enabled info; then
                 echo -e "$message"
