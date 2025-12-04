@@ -140,7 +140,7 @@ declare -gi BR_NUMBER_OF_MONTHLY_RETENTION_DAYS=365
 declare -g BR_TARGET_FILE_BASE_EXTENSION=.tar.gz
 declare -g BR_TARGET_FILE_EXTENSION="${BR_TARGET_FILE_BASE_EXTENSION}.gpg"
 
-declare -g BR_COMMAND_DEFAULT_ARGUMENTS='--acls --delete --devices --exclude=backup --exclude=done --exclude=log --exclude=migration --exclude=mockup --exclude=node_modules --exclude=preRendered --exclude=readme.md --exclude=.cache --exclude=.git --exclude=.local --exclude=.m2 --exclude=.node-gyp --exclude=.npm --exclude=.ssh --exclude=.yarn --executability --force --group --hard-links --human-readable --itemize-changes --links --max-delete=1 --owner --perms --progress --protect-args --specials --recursive --super --times --verbose --whole-file'
+declare -g BR_COMMAND_DEFAULT_ARGUMENTS='--acls --delete --devices --exclude=backup --exclude=done --exclude=log --exclude=migration --exclude=mockup --exclude=node_modules --exclude=preRendered --exclude=readme.md --exclude=.cache --exclude=.git --exclude=.local --exclude=.m2 --exclude=.node-gyp --exclude=.npm --exclude=.ssh --exclude=.yarn --executability --force --group --hard-links --human-readable --itemize-changes --links --max-delete=10 --owner --perms --progress --protect-args --specials --recursive --super --times --verbose --whole-file'
 declare -g BR_COMMAND=''
 declare -g BR_ENCRYPT_COMMAND=''
 if [ -s /etc/backupRotationPassword ]; then
