@@ -234,6 +234,8 @@ br_main() {
             BR_COMMAND+="${BR_COMMAND} &>/dev/null"
         fi
         if eval "$BR_COMMAND"; then
+            sync
+
             local successful=false
             if [[ "$BR_ENCRYPT_COMMAND" != '' ]]; then
                 if eval "$BR_ENCRYPT_COMMAND"; then
@@ -242,6 +244,9 @@ br_main() {
             else
                 successful=true
             fi
+
+            sync
+
             # Clean outdated daily backups.
             local path="${target_path}/${BR_DAILY_TARGET_PATH}"
             if [ -d "$path" ]; then
