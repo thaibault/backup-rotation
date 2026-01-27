@@ -80,7 +80,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "backup-rotation@workspace:."
   dependencies:
-    bashlink: "npm:^1.0.274"
+    bashlink: "npm:^1.0.277"
     documentation-website: "npm:^1.0.398"
     shellcheck: "npm:^4.1.0"
   bin:
@@ -107,13 +107,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bashlink@npm:^1.0.274":
-  version: 1.0.274
-  resolution: "bashlink@npm:1.0.274"
+"bashlink@npm:^1.0.277":
+  version: 1.0.277
+  resolution: "bashlink@npm:1.0.277"
   bin:
     bashlink-doctest: doctest.sh
     bashlink-document: documentation.sh
-  checksum: 10c0/573268e6244cbe4ceaaf486aeeb7b8489b1fa8d50e9f1233bbd9d9e60f2a13d526b35fe25f511f0eb398d1855edd4f0b8ff4c77d18e59e020ea5c2cd80ee1131
+  checksum: 10c0/cf501853d5e4b83a64685f6a4f9a450c410d19f6708aea993445f81728bcf0f1f99ab870e6daef94d0250f71c40186916d6173b168b5218dad8d718d9090be47
   languageName: node
   linkType: hard
 
