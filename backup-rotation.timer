@@ -3,7 +3,7 @@ Description=Run backup-rotation.service every 24 hours
 
 [Timer]
 Unit=backup-rotation.service
-OnCalendar=*-*-* 02:00
+OnCalendar=*-*-* 02:00 Europe/Berlin
 
 [Install]
 WantedBy=timers.target
