@@ -140,11 +140,11 @@ declare -gi BR_NUMBER_OF_MONTHLY_RETENTION_DAYS=365
 declare -g BR_TARGET_FILE_BASE_EXTENSION=.tar.gz
 declare -g BR_TARGET_FILE_EXTENSION="${BR_TARGET_FILE_BASE_EXTENSION}.gpg"
 
-declare -g BR_COMMAND_DEFAULT_ARGUMENTS='--acls --delete --devices --exclude=backup --exclude=done --exclude=log --exclude=migration --exclude=mockup --exclude=node_modules --exclude=preRendered --exclude=readme.md --exclude=.cache --exclude=.git --exclude=.local --exclude=.m2 --exclude=.node-gyp --exclude=.npm --exclude=.ssh --exclude=.yarn --executability --force --group --hard-links --human-readable --itemize-changes --links --max-delete=1 --owner --perms --progress --protect-args --specials --recursive --super --times --verbose --whole-file'
+declare -g BR_COMMAND_DEFAULT_ARGUMENTS='--acls --delete --devices --exclude=backup --exclude=done --exclude=log --exclude=migration --exclude=mockup --exclude=node_modules --exclude=preRendered --exclude=readme.md --exclude=.cache --exclude=.git --exclude=.local --exclude=.m2 --exclude=.node-gyp --exclude=.npm --exclude=.ssh --exclude=.yarn --executability --force --group --hard-links --human-readable --itemize-changes --links --max-delete=10000 --owner --perms --progress --protect-args --quiet --recursive --specials --super --times --whole-file'
 declare -g BR_COMMAND=''
 declare -g BR_ENCRYPT_COMMAND=''
 if [ -s /etc/backupRotationPassword ]; then
-    # NOTE: Encrypt with per batch mode:
+    # NOTE: Decrypt via batch mode:
     # cat /etc/backupRotationPassword | gpg --batch --decrypt --no-symkey-cache --output "${target_file_basepath}${BR_TARGET_FILE_BASE_EXTENSION}" --passphrase-fd 0 --pinentry-mode loopback "${target_file_basepath}${BR_TARGET_FILE_EXTENSION}"
     # or interactively:
     # gpg --decrypt --no-symkey-cache --output "${target_file_basepath}${BR_TARGET_FILE_BASE_EXTENSION}" "${target_file_basepath}${BR_TARGET_FILE_EXTENSION}"
@@ -167,7 +167,7 @@ if [ "$BR_ENCRYPT_COMMAND" = '' ]; then
     BR_TARGET_FILE_EXTENSION="$BR_TARGET_FILE_BASE_EXTENSION"
 fi
 if [ "$BR_COMMAND" = '' ]; then
-    BR_COMMAND="rsync $BR_COMMAND_DEFAULT_ARGUMENTS "'"$source_path" "$target_file_basepath" && pushd "$(dirname "$target_file_basepath")" && tar --create --verbose --gzip --file "${target_file_basepath}${BR_TARGET_FILE_BASE_EXTENSION}" "$(basename "$target_file_basepath")"; popd && rm --recursive --verbose "$target_file_basepath"'
+    BR_COMMAND="rsync $BR_COMMAND_DEFAULT_ARGUMENTS "'"$source_path" "$target_file_basepath" && pushd "$(dirname "$target_file_basepath")" &>/dev/null && tar --create --gzip --file "${target_file_basepath}${BR_TARGET_FILE_BASE_EXTENSION}" "$(basename "$target_file_basepath")"; popd &>/dev/null && rm --recursive "$target_file_basepath"'
 fi
 ## endregion
 BL_MODULE_FUNCTION_SCOPE_REWRITES+=('^backupRotation([._][a-zA-Z_-]+)?$/br\1/')
@@ -234,6 +234,8 @@ br_main() {
             BR_COMMAND+="${BR_COMMAND} &>/dev/null"
         fi
         if eval "$BR_COMMAND"; then
+            sync
+
             local successful=false
             if [[ "$BR_ENCRYPT_COMMAND" != '' ]]; then
                 if eval "$BR_ENCRYPT_COMMAND"; then
@@ -242,6 +244,9 @@ br_main() {
             else
                 successful=true
             fi
+
+            sync
+
             # Clean outdated daily backups.
             local path="${target_path}/${BR_DAILY_TARGET_PATH}"
             if [ -d "$path" ]; then
@@ -281,19 +286,26 @@ br_main() {
                     -mtime +"$BR_NUMBER_OF_MONTHLY_RETENTION_DAYS" \
                     -exec $BR_CLEANUP_COMMAND {} \;
             fi
-            if \
-                $successful && \
-                [[ "$BR_POST_RUN_COMMAND" != '' ]] && \
-                ! eval "$BR_POST_RUN_COMMAND"
-            then
-                successful=false
-            fi
+
             local message="Source files in \"${source_path}\" from node \"${BR_NAME}\" "
             if $successful; then
                 message+="successfully backed up to \"${target_file_basepath}${BR_TARGET_FILE_EXTENSION}\"."
             else
                 message+='should be backed up but has failed.'
             fi
+
+            if \
+                $successful && \
+                [[ "$BR_POST_RUN_COMMAND" != '' ]]
+            then
+                if eval "$BR_POST_RUN_COMMAND"; then
+                    message+='\n\nPost run command was successful.'
+                else
+                    message+='\n\nPost run command was not successful!'
+                    successful=false
+                fi
+            fi
+
             message+='\n\nCurrent Backup structure:\n'
             if bl.logging.is_enabled info; then
                 echo -e "$message"
