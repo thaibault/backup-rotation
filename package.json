@@ -40,8 +40,8 @@
     "web-documentation": "^1.0.2"
   },
   "engines": {
-    "node": ">=24",
-    "npm": ">=11",
+    "node": ">=26",
+    "npm": ">=12",
     "yarn": ">=4"
   },
   "webDocumentation": {
