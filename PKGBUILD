@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # -*- coding: utf-8 -*-
 # region header
-# Copyright Torben Sickert (info["~at~"]torben.website) 16.12.2012
+# Copyright Torben Sickert (info["~at~"]tsickert.com) 16.12.2012
 
 # License
 # -------
@@ -14,7 +14,7 @@ pkgver=1.0.90
 pkgrel=37
 pkgdesc='This script allows you to create a local or remote backup rotation for your files.'
 arch=(any)
-url=https://torben.website/backupRotation
+url=https://tsickert.com/backupRotation
 license=(CC-BY-3.0)
 devdepends=(bashlink shellcheck)
 depends=(bash rsync findutils)

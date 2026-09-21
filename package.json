@@ -9,7 +9,7 @@
     "replication",
     "synchronisation"
   ],
-  "homepage": "https://torben.website/backup-rotation",
+  "homepage": "https://tsickert.com/backup-rotation",
   "license": "CC-BY-3.0",
   "repository": {
     "type": "git",

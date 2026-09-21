@@ -1,7 +1,7 @@
 <!-- #!/usr/bin/env markdown
 -*- coding: utf-8 -*-
 region header
-Copyright Torben Sickert (info["~at~"]torben.website) 16.12.2012
+Copyright Torben Sickert (info["~at~"]tsickert.com) 16.12.2012
 
 License
 -------
@@ -20,7 +20,7 @@ Project Status
 [![build push package](https://img.shields.io/github/actions/workflow/status/thaibault/backup-rotation/build-package-and-push.yaml?label=build%20push%20package&style=for-the-badge)](https://github.com/thaibault/backup-rotation/actions/workflows/build-package-and-push.yaml)
 
 [![deploy web documentation](https://img.shields.io/github/actions/workflow/status/thaibault/backup-rotation/deploy-web-documentation.yaml?label=deploy%20web%20documentation&style=for-the-badge)](https://github.com/thaibault/backup-rotation/actions/workflows/deploy-web-documentation.yaml)
-[![web documentation](https://img.shields.io/website-up-down-green-red/https/torben.website/backup-rotation.svg?label=web-documentation&style=for-the-badge)](https://torben.website/backup-rotation)
+[![web documentation](https://img.shields.io/website-up-down-green-red/https/tsickert.com/backup-rotation.svg?label=web-documentation&style=for-the-badge)](https://tsickert.com/backup-rotation)
 
 <!--|deDE:Verwendung-->
 Use case
