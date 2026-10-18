@@ -2,7 +2,7 @@
 # Manual changes might be lost - proceed with caution!
 
 __metadata:
-  version: 9
+  version: 10
   cacheKey: 10c0
 
 "@borewit/text-codec@npm:^0.1.0":
@@ -80,9 +80,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "backup-rotation@workspace:."
   dependencies:
-    bashlink: "npm:^1.0.279"
+    bashlink: "npm:^1.0.280"
     shellcheck: "npm:^4.1.0"
-    web-documentation: "npm:^1.0.2"
+    web-documentation: "npm:^1.0.61"
   bin:
     backup-rotation: backup-rotation.sh
   languageName: unknown
@@ -107,13 +107,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bashlink@npm:^1.0.279":
-  version: 1.0.279
-  resolution: "bashlink@npm:1.0.279"
+"bashlink@npm:^1.0.280":
+  version: 1.0.280
+  resolution: "bashlink@npm:1.0.280"
   bin:
     bashlink-doctest: doctest.sh
     bashlink-document: documentation.sh
-  checksum: 10c0/1dc47ae7aa21486694ec78bd9043c6abc606de7646da4d286b611ea64410850f89551ec95ede062d8d8a75a170b595088df23540a5162a7922767e279cf74221
+  checksum: 10c0/a23782c8787f6dc393763563133f970ffa71a088dd61f190058a86cd56fc6aede3bbea092cad9adbae8970811f524a6a338676ce0d051dce3270e4d526327a99
   languageName: node
   linkType: hard
 
@@ -894,12 +894,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"web-documentation@npm:^1.0.2":
-  version: 1.0.2
-  resolution: "web-documentation@npm:1.0.2"
+"web-documentation@npm:^1.0.61":
+  version: 1.0.61
+  resolution: "web-documentation@npm:1.0.61"
   bin:
     web-documentation: build/deploy.js
-  checksum: 10c0/e95ffd9e7ffefa0f8b1b44161079c21b6dcf80ae16343dbc63452430c6768cf3cee09f2039c4cf4672b811bc884231cc02b193c4f0d6d37174af53627d6d1aa5
+  checksum: 10c0/061910670f04e036b2cba54db2f680c37b7725feb40bfca1fdd85fd3658a255047b384c091e9389e3c2412e35279276c669370782cbb40d0c348f74e8832b94c
   languageName: node
   linkType: hard
 
