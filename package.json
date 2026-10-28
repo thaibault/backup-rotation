@@ -13,10 +13,12 @@
   "license": "CC-BY-3.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/thaibault/backup-rotation"
+    "url": "git+https://github.com/thaibault/backup-rotation.git"
   },
   "main": "backup-rotation.sh",
-  "bin": "backup-rotation.sh",
+  "bin": {
+    "backup-rotation": "backup-rotation.sh"
+  },
   "files": [
     "backup-rotation.timer",
     "backup-rotation.service"
@@ -29,7 +31,7 @@
     "document:show:error": "bashlink-document backup-rotation 1>/dev/null",
     "lint": "hash shellcheck && shellcheck -x *.sh || echo Please install \"shellcheck\". || true",
     "lint:given": "shellcheck -x",
-    "test": "./node_modules/.bin/bashlink-doctest --verbose ../../backup-rotation",
+    "test": "bashlink-doctest --verbose ../../backup-rotation",
     "update:documentation": "web-documentation"
   },
   "dependencies": {
