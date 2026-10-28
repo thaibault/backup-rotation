@@ -82,7 +82,7 @@ __metadata:
   dependencies:
     bashlink: "npm:^1.0.280"
     shellcheck: "npm:^4.1.0"
-    web-documentation: "npm:^1.0.64"
+    web-documentation: "npm:^1.0.65"
   bin:
     backup-rotation: backup-rotation.sh
   languageName: unknown
@@ -894,12 +894,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"web-documentation@npm:^1.0.64":
-  version: 1.0.64
-  resolution: "web-documentation@npm:1.0.64"
+"web-documentation@npm:^1.0.65":
+  version: 1.0.65
+  resolution: "web-documentation@npm:1.0.65"
   bin:
     web-documentation: build/deploy.js
-  checksum: 10c0/17b6150ce3560ce398e1a803c655310fc2a547ffae17edb33697925efe24cfa0669ce6f2888be4a1718c0c97c1f6a8dde4e67e4e89a5d12e401db2337afd1d09
+  checksum: 10c0/8648ece86e15d030a1e1b07623d52c7c2456d02904f7ec56a469ba6693ace71a5e917633e67d917befb5164c5d94046e8f25ab3e9c3d3d9f1cdd268faa7ed627
   languageName: node
   linkType: hard
 
