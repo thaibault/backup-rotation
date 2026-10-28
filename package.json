@@ -1,6 +1,6 @@
 {
   "name": "backup-rotation",
-  "version": "1.0.149",
+  "version": "1.0.150",
   "description": "This script allows you to create a local or remote backup rotation for your files.",
   "keywords": [
     "automatic",
@@ -16,9 +16,7 @@
     "url": "git+https://github.com/thaibault/backup-rotation.git"
   },
   "main": "backup-rotation.sh",
-  "bin": {
-    "backup-rotation": "backup-rotation.sh"
-  },
+  "bin": "backup-rotation.sh",
   "files": [
     "backup-rotation.timer",
     "backup-rotation.service"
