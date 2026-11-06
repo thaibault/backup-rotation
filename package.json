@@ -16,9 +16,7 @@
     "url": "git+https://github.com/thaibault/backup-rotation.git"
   },
   "main": "backup-rotation.sh",
-  "bin": {
-    "backup-rotation": "backup-rotation.sh"
-  },
+  "bin": "backup-rotation.sh",
   "files": [
     "backup-rotation.timer",
     "backup-rotation.service"
@@ -35,11 +33,11 @@
     "update:documentation": "web-documentation"
   },
   "dependencies": {
-    "bashlink": "^1.0.292"
+    "bashlink": "1.0.293"
   },
   "devDependencies": {
     "shellcheck": "^4.1.0",
-    "web-documentation": "^1.0.72"
+    "web-documentation": "^1.0.74"
   },
   "engines": {
     "node": ">=26",
