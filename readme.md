@@ -19,6 +19,9 @@ Project Status
 
 [![build push package](https://img.shields.io/github/actions/workflow/status/thaibault/backup-rotation/build-package-and-push.yaml?label=build%20push%20package&style=for-the-badge)](https://github.com/thaibault/backup-rotation/actions/workflows/build-package-and-push.yaml)
 
+[![lint](https://img.shields.io/github/actions/workflow/status/thaibault/backup-rotation/lint.yaml?label=lint&style=for-the-badge)](https://github.com/thaibault/backup-rotation/actions/workflows/lint.yaml)
+[![test](https://img.shields.io/github/actions/workflow/status/thaibault/backup-rotation/test.yaml?label=test&style=for-the-badge)](https://github.com/thaibault/backup-rotation/actions/workflows/test.yaml)
+
 [![deploy web documentation](https://img.shields.io/github/actions/workflow/status/thaibault/backup-rotation/deploy-web-documentation.yaml?label=deploy%20web%20documentation&style=for-the-badge)](https://github.com/thaibault/backup-rotation/actions/workflows/deploy-web-documentation.yaml)
 [![web documentation](https://img.shields.io/website-up-down-green-red/https/tsickert.com/backup-rotation.svg?label=web-documentation&style=for-the-badge)](https://tsickert.com/backup-rotation)
 
