@@ -1,6 +1,6 @@
 {
   "name": "backup-rotation",
-  "version": "1.0.151",
+  "version": "1.0.152",
   "description": "This script allows you to create a local or remote backup rotation for your files.",
   "keywords": [
     "automatic",
@@ -16,7 +16,9 @@
     "url": "git+https://github.com/thaibault/backup-rotation.git"
   },
   "main": "backup-rotation.sh",
-  "bin": "backup-rotation.sh",
+  "bin": {
+    "backup-rotation": "backup-rotation.sh"
+  },
   "files": [
     "backup-rotation.timer",
     "backup-rotation.service"
@@ -25,11 +27,11 @@
     "build": "echo nothing to build.",
     "clear": "[ ! -e apiDocumentation ] || rm --recursive apiDocumentation",
     "document": "mkdir --parents apiDocumentation/backup-rotation/latest && ./node_modules/.bin/bashlink-document backup-rotation 1>apiDocumentation/backup-rotation/latest/index.html",
-    "document:show": "./node_modules/.bin/bashlink-document backup-rotation",
-    "document:show:error": "./node_modules/.bin/bashlink-document backup-rotation 1>/dev/null",
+    "document:show": "bashlink-document backup-rotation",
+    "document:show:error": "bashlink-document backup-rotation 1>/dev/null",
     "lint": "shellcheck -x *.sh",
     "lint:given": "shellcheck -x",
-    "test": "./node_modules/.bin/bashlink-doctest --verbose ../../backup-rotation",
+    "test": "bashlink-doctest --verbose ../../backup-rotation",
     "update:documentation": "web-documentation"
   },
   "dependencies": {
