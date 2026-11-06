@@ -26,12 +26,12 @@
   "scripts": {
     "build": "echo nothing to build.",
     "clear": "[ ! -e apiDocumentation ] || rm --recursive apiDocumentation",
-    "document": "mkdir --parents apiDocumentation/backup-rotation/latest && ./node_modules/.bin/bashlink-document backup-rotation 1>apiDocumentation/backup-rotation/latest/index.html",
-    "document:show": "bashlink-document backup-rotation",
-    "document:show:error": "bashlink-document backup-rotation 1>/dev/null",
+    "document": "mkdir --parents apiDocumentation/backup-rotation/latest && bash ./node_modules/.bin/bashlink-document backup-rotation 1>apiDocumentation/backup-rotation/latest/index.html",
+    "document:show": "bash ./node_modules/.bin/bashlink-document backup-rotation",
+    "document:show:error": "bash ./node_modules/.bin/bashlink-document backup-rotation 1>/dev/null",
     "lint": "shellcheck -x *.sh",
     "lint:given": "shellcheck -x",
-    "test": "bashlink-doctest --verbose ../../backup-rotation",
+    "test": "bash ./node_modules/.bin/bashlink-doctest --verbose ../../backup-rotation",
     "update:documentation": "web-documentation"
   },
   "dependencies": {
