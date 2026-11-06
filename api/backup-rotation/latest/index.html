@@ -1,0 +1,403 @@
+## Module backup-rotation
+This module provides generic service handling for each program supporting
+standard process signals. In general you only have to replace the string
+"generic" to you specific application name.
+
+You have to install program `msmtp` to get this script working. A proper
+user specific "~/.msmtprc" or global "/etc/msmtprc" have to be present on
+your distribution. A sample configuration using simple gmail account to
+send mails (Replace `ACCOUNT_NAME`, `ACCOUNT_E_MAIL_ADDRESS`,
+`ACCOUNT_PASSWORD`, `RECIPIENT_E_MAIL_ADDRESS`):
+
+```
+defaults
+auth           on
+tls            on
+tls_starttls   on
+tls_trust_file /etc/ssl/certs/ca-certificates.crt
+logfile        /tmp/msmtpLog
+
+account        gmail
+host           smtp.gmail.com
+port           587
+from           ACCOUNT_E_MAIL_ADDRESS
+user           ACCOUNT_NAME@gmail.com
+password       ACCOUNT_PASSWORD
+
+account        default : gmail
+```
+
+Furthermore you should create a file "/etc/backupRotation" to overwrite the
+following variables. You need to set values for
+`BR_SOURCE_TARGET_MAPPINGS` at least:
+
+```bash
+declare -A BR_SOURCE_TARGET_MAPPINGS=(
+["SOURCE_URL1"]="TARGET_URL1 RECIPIENT_E_MAIL_ADDRESS"
+["SOURCE_URL2"]="TARGET_URL2 RECIPIENT_E_MAIL_ADDRESS ANOTHER_RECIPIENT_E_MAIL_ADDRESS"
+...
+)
+```
+### Function br_clean_outdated_backups
+Removes daily, weekly and monthly backups in given target path which
+are older than their configured retention days and lists them.
+
+```bash
+>>> cd "$(br_bl_doctest_mktemp --directory)"
+>>> mkdir --parents target/daily target/weekly target/monthly
+>>> touch --date="-15 days" target/daily/outdated.tar.gz
+>>> touch --date="-13 days" target/daily/current.tar.gz
+>>> touch --date="-57 days" target/weekly/outdated.tar.gz
+>>> touch --date="-366 days" target/monthly/outdated.tar.gz
+>>> br.clean_outdated_backups "${PWD}/target" | sed "s:${PWD}/::"
+>>> br_doctest_list target
+target/daily/outdated.tar.gz
+target/weekly/outdated.tar.gz
+target/monthly/outdated.tar.gz
+target
+target/daily
+target/daily/current.tar.gz
+target/monthly
+target/weekly
+```
+Missing directories are skipped:
+
+```bash
+>>> br.clean_outdated_backups /not/existing; echo $?
+0
+```
+### Function br_download
+Simply downloads missing modules.
+
+```bash
+>>> br.download --silent https://domain.tld/path/to/file.ext; echo $?
+6
+```
+### Function br_encrypt_backup
+Runs the configured encryption command (if any) for given backup file
+path (without extension) which can be referenced as
+"$target_file_basepath".
+
+```bash
+>>> br.encrypt_backup target/daily/day; echo $?
+0
+```
+```bash
+>>> BR_ENCRYPT_COMMAND="echo \"\$target_file_basepath\""
+>>> br.encrypt_backup target/daily/day
+target/daily/day
+```
+```bash
+>>> BR_ENCRYPT_COMMAND=false
+>>> br.encrypt_backup target/daily/day; echo $?
+1
+```
+### Function br_get_e_mail_addresses
+Lists all e-mail addresses from given source target mapping value.
+
+```bash
+>>> br.get_e_mail_addresses "/backup a@b.tld c@d.tld"
+a@b.tld
+c@d.tld
+```
+```bash
+>>> br.get_e_mail_addresses /backup
+```
+### Function br_get_message
+Creates the report message for given source, backup file path (without
+extension), backup result and optional post run command result. Line
+breaks are encoded as "\n".
+
+```bash
+>>> br.get_message /source /backup/daily/day true
+Source files in "/source" from node "test" successfully backed up to "/backup/daily/day.tar.gz".\n\nCurrent Backup structure:\n
+```
+```bash
+>>> br.get_message /source /backup/daily/day false
+Source files in "/source" from node "test" should be backed up but has failed.\n\nCurrent Backup structure:\n
+```
+```bash
+>>> br.get_message /source /backup/daily/day true true
++bl.doctest.contains
+\n\nPost run command was successful.\n\n
+```
+```bash
+>>> br.get_message /source /backup/daily/day true false
++bl.doctest.contains
+\n\nPost run command was not successful!\n\n
+```
+### Function br_get_target_file_basepath
+Determines the backup file path (without extension) in given target
+path for given month and week day number.
+
+```bash
+>>> BR_MONTH_DAY_NUMBER=1
+>>> BR_WEEK_DAY_NUMBER=6
+>>> br.get_target_file_basepath /backup 2 3
+>>> br.get_target_file_basepath /backup 2 6
+>>> br.get_target_file_basepath /backup 1 3
+>>> br.get_target_file_basepath /backup 1 6
+/backup/daily/day
+/backup/weekly/week
+/backup/monthly/month
+/backup/monthly/month
+```
+### Function br_get_target_path
+Determines the target path from given source target mapping value.
+
+```bash
+>>> br.get_target_path "/backup a@b.tld c@d.tld"
+/backup
+```
+### Function br_link_backup
+Links a weekly or monthly backup into the daily and (for a monthly
+backup on the configured week day) weekly backups.
+
+Nothing is linked on a regular day:
+
+```bash
+>>> cd "$(br_bl_doctest_mktemp --directory)"
+>>> br.link_backup "${PWD}/target" 2 3
+>>> [ -e target ] || echo nothing linked
+nothing linked
+```
+A weekly backup is linked into the daily backups:
+
+```bash
+>>> cd "$(br_bl_doctest_mktemp --directory)"
+>>> BR_MONTH_DAY_NUMBER=1
+>>> BR_WEEK_DAY_NUMBER=6
+>>> br.link_backup "${PWD}/target" 2 6
+>>> br_doctest_list target
+target
+target/daily
+target/daily/day.tar.gz -> target/weekly/week.tar.gz
+```
+A monthly backup is linked into the daily backups:
+
+```bash
+>>> cd "$(br_bl_doctest_mktemp --directory)"
+>>> BR_MONTH_DAY_NUMBER=1
+>>> BR_WEEK_DAY_NUMBER=6
+>>> br.link_backup "${PWD}/target" 1 3
+>>> br_doctest_list target
+target
+target/daily
+target/daily/day.tar.gz -> target/monthly/month.tar.gz
+```
+A monthly backup on the configured week day is linked into the daily
+and weekly backups:
+
+```bash
+>>> cd "$(br_bl_doctest_mktemp --directory)"
+>>> BR_MONTH_DAY_NUMBER=1
+>>> BR_WEEK_DAY_NUMBER=6
+>>> br.link_backup "${PWD}/target" 1 6
+>>> br_doctest_list target
+target
+target/daily
+target/daily/day.tar.gz -> target/monthly/month.tar.gz
+target/weekly
+target/weekly/week.tar.gz -> target/monthly/month.tar.gz
+```
+### Function br_main
+Backs up each source of "BR_SOURCE_TARGET_MAPPINGS" into its target,
+rotates outdated backups and notifies configured recipients.
+
+Each mapping is backed up exactly once:
+
+```bash
+>>> cd "$(br_bl_doctest_mktemp --directory)"
+>>> BR_SOURCE_TARGET_MAPPINGS=(
+>>>     ["${PWD}/source1"]="${PWD}/target1"
+>>>     ["${PWD}/source2"]="${PWD}/target2"
+>>> )
+>>> BR_COMMAND="echo \"\$source_path\" >>runs.log; ${BR_COMMAND}"
+>>> br.main
+>>> sed "s:${PWD}/::" runs.log | sort
+>>> br_doctest_list target1
+source1
+source2
+target1
+target1/daily
+target1/daily/day.tar.gz
+```
+A failing backup keeps outdated backups, skips the post run command
+and is reported:
+
+```bash
+>>> cd "$(br_bl_doctest_mktemp --directory)"
+>>> br_doctest_mock_commands
+>>> BR_SOURCE_TARGET_MAPPINGS=(["${PWD}/source"]="${PWD}/target a@b.tld")
+>>> BR_SENDER_E_MAIL_ADDRESS=sender@b.tld
+>>> BR_SEND_SUCCESS_E_MAILS=false
+>>> BR_MONITORING_URL=https://monitoring.tld
+>>> BR_COMMAND=false
+>>> BR_POST_RUN_COMMAND="echo executed >post-run.log"
+>>> mkdir --parents target/daily
+>>> touch --date="-15 days" target/daily/outdated.tar.gz
+>>> br.main
+>>> br_doctest_list target
+>>> [ -f post-run.log ] || echo not executed
+>>> grep "^Subject:" msmtp.log
+>>> grep --count "should be backed up but has failed." msmtp.log
+>>> grep --only-matching "\"error\": [a-z]*" curl.log
+target
+target/daily
+target/daily/outdated.tar.gz
+not executed
+Subject: Backup has failed
+1
+"error": true
+```
+A successful backup is reported to each recipient:
+
+```bash
+>>> cd "$(br_bl_doctest_mktemp --directory)"
+>>> br_doctest_mock_commands
+>>> BR_SOURCE_TARGET_MAPPINGS=(
+>>>     ["${PWD}/source"]="${PWD}/target a@b.tld c@d.tld"
+>>> )
+>>> BR_SENDER_E_MAIL_ADDRESS=sender@b.tld
+>>> br.main
+>>> grep --extended-regexp "^(To|Subject):" msmtp.log
+>>> grep --count "successfully backed up to" msmtp.log
+To: a@b.tld
+Subject: Backup was successful
+To: c@d.tld
+Subject: Backup was successful
+2
+```
+A failing encryption is reported:
+
+```bash
+>>> cd "$(br_bl_doctest_mktemp --directory)"
+>>> br_doctest_mock_commands
+>>> BR_SOURCE_TARGET_MAPPINGS=(["${PWD}/source"]="${PWD}/target a@b.tld")
+>>> BR_SENDER_E_MAIL_ADDRESS=sender@b.tld
+>>> BR_ENCRYPT_COMMAND=false
+>>> br.main
+>>> grep "^Subject:" msmtp.log
+>>> grep --count "should be backed up but has failed." msmtp.log
+Subject: Backup has failed
+1
+```
+A post run command is only executed after a successful backup and its
+result is reported:
+
+```bash
+>>> cd "$(br_bl_doctest_mktemp --directory)"
+>>> br_doctest_mock_commands
+>>> BR_SOURCE_TARGET_MAPPINGS=(["${PWD}/source"]="${PWD}/target a@b.tld")
+>>> BR_SENDER_E_MAIL_ADDRESS=sender@b.tld
+>>> BR_POST_RUN_COMMAND=true
+>>> br.main
+>>> BR_POST_RUN_COMMAND=false
+>>> br.main
+>>> BR_ENCRYPT_COMMAND=false
+>>> BR_POST_RUN_COMMAND="echo executed >post-run.log"
+>>> br.main
+>>> grep --extended-regexp "^Subject:|Post run command" msmtp.log
+>>> [ -f post-run.log ] || echo not executed
+Subject: Backup was successful
+Post run command was successful.
+Subject: Backup has failed
+Post run command was not successful!
+Subject: Backup has failed
+not executed
+```
+### Function br_notify
+Sends given message to all recipients of given source and informs the
+monitoring service about the result. Success e-mails can be disabled
+via "BR_SEND_SUCCESS_E_MAILS".
+
+```bash
+>>> cd "$(br_bl_doctest_mktemp --directory)"
+>>> br_doctest_mock_commands
+>>> BR_SOURCE_TARGET_MAPPINGS=(["/source"]="${PWD} a@b.tld c@d.tld")
+>>> BR_SENDER_E_MAIL_ADDRESS=sender@b.tld
+>>> BR_MONITORING_URL=https://monitoring.tld
+>>> br.notify /source "$PWD" message true
+>>> grep "^To:" msmtp.log
+>>> sed "s:${PWD}:/target:" curl.log
+To: a@b.tld
+To: c@d.tld
+--data {"source": "/source", "target": "/target", "error": false} --header Content-Type: application/json --request PUT https://monitoring.tld
+```
+```bash
+>>> cd "$(br_bl_doctest_mktemp --directory)"
+>>> br_doctest_mock_commands
+>>> BR_SOURCE_TARGET_MAPPINGS=(["/source"]="${PWD} a@b.tld")
+>>> BR_SENDER_E_MAIL_ADDRESS=sender@b.tld
+>>> BR_SEND_SUCCESS_E_MAILS=false
+>>> br.notify /source "$PWD" message true
+>>> [ -f msmtp.log ] || echo no e-mail
+>>> br.notify /source "$PWD" message false
+>>> grep "^Subject:" msmtp.log
+no e-mail
+Subject: Backup has failed
+```
+The monitoring service is informed independently of e-mails. No
+e-mail is sent without a sender address:
+
+```bash
+>>> cd "$(br_bl_doctest_mktemp --directory)"
+>>> br_doctest_mock_commands
+>>> BR_SOURCE_TARGET_MAPPINGS=(["/source"]="${PWD} a@b.tld")
+>>> BR_MONITORING_URL=https://monitoring.tld
+>>> br.notify /source "$PWD" message false
+>>> [ -f msmtp.log ] || echo no e-mail
+>>> BR_SENDER_E_MAIL_ADDRESS=sender@b.tld
+>>> BR_SEND_SUCCESS_E_MAILS=false
+>>> br.notify /source "$PWD" message true
+>>> [ -f msmtp.log ] || echo no e-mail
+>>> grep --only-matching "\"error\": [a-z]*" curl.log
+no e-mail
+no e-mail
+"error": true
+"error": false
+```
+### Function br_run_backup
+Runs the configured backup command for given source, target and backup
+file path (without extension). The configured command can reference
+them as "$source_path", "$target_path" and "$target_file_basepath".
+
+```bash
+>>> cd "$(br_bl_doctest_mktemp --directory)"
+>>> BR_COMMAND+=";"
+>>> local -r command="$BR_COMMAND"
+>>> br.run_backup "${PWD}/source" "${PWD}/target" "${PWD}/target/daily/day"
+>>> br_doctest_list target
+>>> [[ "$BR_COMMAND" == "$command" ]] && echo unchanged
+target
+target/daily
+target/daily/day.tar.gz
+unchanged
+```
+```bash
+>>> BR_COMMAND="echo output; false"
+>>> br.run_backup source target target/daily/day; echo $?
+1
+```
+### Function br_send_e_mail
+Sends given message with the current backup structure of given target
+path to given e-mail address.
+
+```bash
+>>> cd "$(br_bl_doctest_mktemp --directory)"
+>>> br_doctest_mock_commands
+>>> BR_SENDER_E_MAIL_ADDRESS=sender@b.tld
+>>> br.send_e_mail a@b.tld "$PWD" "Saved \"/source\"." true
+>>> grep --extended-regexp "^(From|To|Subject):|/source" msmtp.log
+From: sender@b.tld
+To: a@b.tld
+Subject: Backup was successful
+<p>Saved "<span style="font-weight:bold">/source</span>".</p>
+```
+```bash
+>>> cd "$(br_bl_doctest_mktemp --directory)"
+>>> br_doctest_mock_commands
+>>> br.send_e_mail a@b.tld "$PWD" message false
+>>> grep "^Subject:" msmtp.log
+Subject: Backup has failed
+```
