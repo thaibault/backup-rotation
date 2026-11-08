@@ -7,7 +7,7 @@
     "backup",
     "rotation",
     "replication",
-    "synchronisation"
+    "synchronization"
   ],
   "homepage": "https://tsickert.com/backup-rotation",
   "license": "CC-BY-3.0",
