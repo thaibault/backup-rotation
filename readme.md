@@ -48,7 +48,7 @@ Features
 - Works incrementally (can complete interrupted backups after reboot e.g., uses
   rsync)
 - Completely configurable how long you plan to preserve your backup files
-- Optionally use your own synchronisation, compression and/or cleanup tool
+- Optionally use your own synchronization, compression and/or cleanup tool
 
 Installation
 ------------
