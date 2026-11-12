@@ -7,7 +7,8 @@
 # -------
 
 # This library written by Torben Sickert stands under a creative commons naming
-# 3.0 unported license. See https://creativecommons.org/licenses/by/3.0/deed.de
+# 4.0 international license.
+# See https://creativecommons.org/licenses/by/4.0/deed.de
 # endregion
 pkgname=backup-rotation
 pkgver=1.0.90
@@ -15,7 +16,7 @@ pkgrel=37
 pkgdesc='This script allows you to create a local or remote backup rotation for your files.'
 arch=(any)
 url=https://tsickert.com/backupRotation
-license=(CC-BY-3.0)
+license=(CC-BY-4.0)
 devdepends=(bashlink shellcheck)
 depends=(bash rsync findutils)
 optdepends=(
