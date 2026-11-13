@@ -64,15 +64,13 @@ bl.module.import bashlink.tools
 # region variables
 ## region documentation
 declare -gr BR__DOCUMENTATION__='
-    This module provides generic service handling for each program supporting
-    standard process signals. In general you only have to replace the string
-    "generic" to you specific application name.
+    This module creates daily, weekly and monthly backups of each configured
+    source and removes them after their retention time.
 
-    You have to install program `msmtp` to get this script working. A proper
-    user specific "~/.msmtprc" or global "/etc/msmtprc" have to be present on
-    your distribution. A sample configuration using simple gmail account to
-    send mails (Replace `ACCOUNT_NAME`, `ACCOUNT_E_MAIL_ADDRESS`,
-    `ACCOUNT_PASSWORD`, `RECIPIENT_E_MAIL_ADDRESS`):
+    To get notified via e-mail install `msmtp`. A proper user specific
+    "~/.msmtprc" or global "/etc/msmtprc" has to be present on your
+    distribution. A sample configuration using a gmail account to send mails
+    (Replace `ACCOUNT_NAME`, `ACCOUNT_E_MAIL_ADDRESS`, `ACCOUNT_PASSWORD`):
 
     ```
         defaults
@@ -108,9 +106,15 @@ declare -agr BR__DEPENDENCIES__=(
     bash
     date
     find
-    msmtp
+    rsync
+    tar
     test
-    tree
+)
+declare -agr BR__OPTIONAL_DEPENDENCIES__=(
+    'curl: Inform a monitoring service.'
+    'gpg: Encrypt backups.'
+    'msmtp: Send e-mail notifications.'
+    'tree: Show the backup structure in reports.'
 )
 declare -gr BR__DOCTEST_SETUP__='
     # Runs before each test: Neutralizes a local "/etc/backupRotation" and
@@ -165,7 +169,8 @@ declare -Ag BR_SOURCE_TARGET_MAPPINGS=()
 declare -g BR_SEND_SUCCESS_E_MAILS=true
 # Disables by setting e-mail address to an empty string.
 declare -g BR_SENDER_E_MAIL_ADDRESS=''
-declare -g BR_REPLIER_E_MAIL_ADDRESS="$BR_SENDER_E_MAIL_ADDRESS"
+# Defaults to the sender address.
+declare -g BR_REPLIER_E_MAIL_ADDRESS=''
 
 declare -g BR_DAILY_TARGET_PATH=daily/
 declare -g BR_WEEKLY_TARGET_PATH=weekly/
@@ -212,6 +217,9 @@ declare -g BR_NAME=NODE_NAME
 if [ -s /etc/backupRotation ]; then
     # shellcheck disable=SC1091
     source /etc/backupRotation
+fi
+if [ "$BR_REPLIER_E_MAIL_ADDRESS" = '' ]; then
+    BR_REPLIER_E_MAIL_ADDRESS="$BR_SENDER_E_MAIL_ADDRESS"
 fi
 if [ "$BR_ENCRYPT_COMMAND" = '' ]; then
     BR_TARGET_FILE_EXTENSION="$BR_TARGET_FILE_BASE_EXTENSION"
@@ -829,11 +837,14 @@ if bl.tools.is_main; then
         # shellcheck disable=SC2154
         bl.logging.error "$BL_EXCEPTION_LAST_TRACEBACK"
     }
-    [ -f "$BL_MODULE_NAME_RESOLVING_CACHE_FILE_PATH" ] && \
+    # NOTE: Use "if" to avoid a failing test as exit code of this script.
+    if [ -f "$BL_MODULE_NAME_RESOLVING_CACHE_FILE_PATH" ]; then
         rm "$BL_MODULE_NAME_RESOLVING_CACHE_FILE_PATH"
+    fi
     # shellcheck disable=SC2154
-    [ -d "$BL_MODULE_REMOTE_MODULE_CACHE_PATH" ] && \
+    if [ -d "$BL_MODULE_REMOTE_MODULE_CACHE_PATH" ]; then
         rm --recursive "$BL_MODULE_REMOTE_MODULE_CACHE_PATH"
+    fi
     # endregion
 fi
 # region vim modline
