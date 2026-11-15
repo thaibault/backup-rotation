@@ -29,7 +29,7 @@ optdepends=(
 )
 provides=(backup-rotation)
 source=(backup-rotation.sh backup-rotation.timer backup-rotation.service)
-md5sums=(SKIP SKIP SKIP)
+sha256sums=(SKIP SKIP SKIP)
 copy_to_aur=true
 
 package() {
