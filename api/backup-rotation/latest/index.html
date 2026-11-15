@@ -1,13 +1,11 @@
 ## Module backup-rotation
-This module provides generic service handling for each program supporting
-standard process signals. In general you only have to replace the string
-"generic" to you specific application name.
+This module creates daily, weekly and monthly backups of each configured
+source and removes them after their retention time.
 
-You have to install program `msmtp` to get this script working. A proper
-user specific "~/.msmtprc" or global "/etc/msmtprc" have to be present on
-your distribution. A sample configuration using simple gmail account to
-send mails (Replace `ACCOUNT_NAME`, `ACCOUNT_E_MAIL_ADDRESS`,
-`ACCOUNT_PASSWORD`, `RECIPIENT_E_MAIL_ADDRESS`):
+To get notified via e-mail install `msmtp`. A proper user specific
+"~/.msmtprc" or global "/etc/msmtprc" has to be present on your
+distribution. A sample configuration using a gmail account to send mails
+(Replace `ACCOUNT_NAME`, `ACCOUNT_E_MAIL_ADDRESS`, `ACCOUNT_PASSWORD`):
 
 ```
 defaults
