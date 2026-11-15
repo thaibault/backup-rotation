@@ -11,8 +11,8 @@
 # See https://creativecommons.org/licenses/by/4.0/deed.de
 # endregion
 pkgname=backup-rotation
-pkgver=1.0.90
-pkgrel=37
+pkgver=1.0.155
+pkgrel=1
 pkgdesc='This script allows you to create a local or remote backup rotation for your files.'
 arch=(any)
 url=https://tsickert.com/backup-rotation
