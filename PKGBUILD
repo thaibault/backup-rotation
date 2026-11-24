@@ -11,7 +11,7 @@
 # See https://creativecommons.org/licenses/by/4.0/deed.de
 # endregion
 pkgname=backup-rotation
-pkgver=1.0.155
+pkgver=2.0.0
 pkgrel=1
 pkgdesc='This script allows you to create a local or remote backup rotation for your files.'
 arch=(any)
