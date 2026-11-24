@@ -232,28 +232,28 @@ BL_MODULE_FUNCTION_SCOPE_REWRITES+=('^backupRotation([._][a-zA-Z_-]+)?$/br\1/')
 BL_MODULE_GLOBAL_SCOPE_REWRITES+=('^BACKUP_ROTATION(_[a-zA-Z_-]+)?$/BR\1/')
 # endregion
 # region helper
-alias br.get_target_path=br_get_target_path
+alias br.get-target-path=br_get_target_path
 br_get_target_path() {
     local -r __documentation__='
         Determines the target path from given source target mapping value.
 
-        >>> br.get_target_path "/backup a@b.tld c@d.tld"
+        >>> br.get-target-path "/backup a@b.tld c@d.tld"
         /backup
     '
     local -a parts
     read -r -a parts <<<"$1"
     echo "${parts[0]}"
 }
-alias br.get_e_mail_addresses=br_get_e_mail_addresses
+alias br.get-e-mail-addresses=br_get_e_mail_addresses
 br_get_e_mail_addresses() {
     local -r __documentation__='
         Lists all e-mail addresses from given source target mapping value.
 
-        >>> br.get_e_mail_addresses "/backup a@b.tld c@d.tld"
+        >>> br.get-e-mail-addresses "/backup a@b.tld c@d.tld"
         a@b.tld
         c@d.tld
 
-        >>> br.get_e_mail_addresses /backup
+        >>> br.get-e-mail-addresses /backup
     '
     local -a parts
     read -r -a parts <<<"$1"
@@ -261,7 +261,7 @@ br_get_e_mail_addresses() {
         printf '%s\n' "${parts[@]:1}"
     fi
 }
-alias br.get_target_file_basepath=br_get_target_file_basepath
+alias br.get-target-file-basepath=br_get_target_file_basepath
 br_get_target_file_basepath() {
     local -r __documentation__='
         Determines the backup file path (without extension) in given target
@@ -269,10 +269,10 @@ br_get_target_file_basepath() {
 
         >>> BR_MONTH_DAY_NUMBER=1
         >>> BR_WEEK_DAY_NUMBER=6
-        >>> br.get_target_file_basepath /backup 2 3
-        >>> br.get_target_file_basepath /backup 2 6
-        >>> br.get_target_file_basepath /backup 1 3
-        >>> br.get_target_file_basepath /backup 1 6
+        >>> br.get-target-file-basepath /backup 2 3
+        >>> br.get-target-file-basepath /backup 2 6
+        >>> br.get-target-file-basepath /backup 1 3
+        >>> br.get-target-file-basepath /backup 1 6
         /backup/daily/day
         /backup/weekly/week
         /backup/monthly/month
@@ -289,7 +289,7 @@ br_get_target_file_basepath() {
         echo "${target_path}/${BR_DAILY_TARGET_PATH}${BR_TARGET_DAILY_FILE_BASENAME}"
     fi
 }
-alias br.link_backup=br_link_backup
+alias br.link-backup=br_link_backup
 br_link_backup() {
     local -r __documentation__='
         Links a weekly or monthly backup into the daily and (for a monthly
@@ -298,7 +298,7 @@ br_link_backup() {
         Nothing is linked on a regular day:
 
         >>> cd "$(br_bl_doctest_mktemp --directory)"
-        >>> br.link_backup "${PWD}/target" 2 3
+        >>> br.link-backup "${PWD}/target" 2 3
         >>> [ -e target ] || echo nothing linked
         nothing linked
 
@@ -307,7 +307,7 @@ br_link_backup() {
         >>> cd "$(br_bl_doctest_mktemp --directory)"
         >>> BR_MONTH_DAY_NUMBER=1
         >>> BR_WEEK_DAY_NUMBER=6
-        >>> br.link_backup "${PWD}/target" 2 6
+        >>> br.link-backup "${PWD}/target" 2 6
         >>> br_doctest_list target
         target
         target/daily
@@ -318,7 +318,7 @@ br_link_backup() {
         >>> cd "$(br_bl_doctest_mktemp --directory)"
         >>> BR_MONTH_DAY_NUMBER=1
         >>> BR_WEEK_DAY_NUMBER=6
-        >>> br.link_backup "${PWD}/target" 1 3
+        >>> br.link-backup "${PWD}/target" 1 3
         >>> br_doctest_list target
         target
         target/daily
@@ -330,7 +330,7 @@ br_link_backup() {
         >>> cd "$(br_bl_doctest_mktemp --directory)"
         >>> BR_MONTH_DAY_NUMBER=1
         >>> BR_WEEK_DAY_NUMBER=6
-        >>> br.link_backup "${PWD}/target" 1 6
+        >>> br.link-backup "${PWD}/target" 1 6
         >>> br_doctest_list target
         target
         target/daily
@@ -342,7 +342,7 @@ br_link_backup() {
     local -ir month_day_number="$2"
     local -ir week_day_number="$3"
     local -r target_file_path="$(
-        br.get_target_file_basepath \
+        br.get-target-file-basepath \
             "$target_path" "$month_day_number" "$week_day_number"
     )${BR_TARGET_FILE_EXTENSION}"
     local -a link_target_file_paths=()
@@ -368,7 +368,7 @@ br_link_backup() {
             "$link_target_file_path"
     done
 }
-alias br.run_backup=br_run_backup
+alias br.run-backup=br_run_backup
 br_run_backup() {
     local -r __documentation__='
         Runs the configured backup command for given source, target and backup
@@ -378,7 +378,7 @@ br_run_backup() {
         >>> cd "$(br_bl_doctest_mktemp --directory)"
         >>> BR_COMMAND+=";"
         >>> local -r command="$BR_COMMAND"
-        >>> br.run_backup "${PWD}/source" "${PWD}/target" "${PWD}/target/daily/day"
+        >>> br.run-backup "${PWD}/source" "${PWD}/target" "${PWD}/target/daily/day"
         >>> br_doctest_list target
         >>> [[ "$BR_COMMAND" == "$command" ]] && echo unchanged
         target
@@ -387,7 +387,7 @@ br_run_backup() {
         unchanged
 
         >>> BR_COMMAND="echo output; false"
-        >>> br.run_backup source target target/daily/day; echo $?
+        >>> br.run-backup source target target/daily/day; echo $?
         1
     '
     local -r source_path="$1"
@@ -395,7 +395,7 @@ br_run_backup() {
     local -r target_file_basepath="$3"
     mkdir --parents "$(dirname "$target_file_basepath")"
     local command="$BR_COMMAND"
-    if bl.logging.is_enabled info; then
+    if bl.logging.is-enabled info; then
         echo "Running \"${command}\"."
     else
         # NOTE: The newline terminates a trailing "&" or ";" in the
@@ -405,22 +405,22 @@ br_run_backup() {
     eval "$command" || return $?
     sync
 }
-alias br.encrypt_backup=br_encrypt_backup
+alias br.encrypt-backup=br_encrypt_backup
 br_encrypt_backup() {
     local -r __documentation__='
         Runs the configured encryption command (if any) for given backup file
         path (without extension) which can be referenced as
         "$target_file_basepath".
 
-        >>> br.encrypt_backup target/daily/day; echo $?
+        >>> br.encrypt-backup target/daily/day; echo $?
         0
 
         >>> BR_ENCRYPT_COMMAND="echo \"\$target_file_basepath\""
-        >>> br.encrypt_backup target/daily/day
+        >>> br.encrypt-backup target/daily/day
         target/daily/day
 
         >>> BR_ENCRYPT_COMMAND=false
-        >>> br.encrypt_backup target/daily/day; echo $?
+        >>> br.encrypt-backup target/daily/day; echo $?
         1
     '
     local -r target_file_basepath="$1"
@@ -431,7 +431,7 @@ br_encrypt_backup() {
     sync
     return $result
 }
-alias br.clean_outdated_backups=br_clean_outdated_backups
+alias br.clean-outdated-backups=br_clean_outdated_backups
 br_clean_outdated_backups() {
     local -r __documentation__='
         Removes daily, weekly and monthly backups in given target path which
@@ -443,7 +443,7 @@ br_clean_outdated_backups() {
         >>> touch --date="-13 days" target/daily/current.tar.gz
         >>> touch --date="-57 days" target/weekly/outdated.tar.gz
         >>> touch --date="-366 days" target/monthly/outdated.tar.gz
-        >>> br.clean_outdated_backups "${PWD}/target" | sed "s:${PWD}/::"
+        >>> br.clean-outdated-backups "${PWD}/target" | sed "s:${PWD}/::"
         >>> br_doctest_list target
         target/daily/outdated.tar.gz
         target/weekly/outdated.tar.gz
@@ -456,7 +456,7 @@ br_clean_outdated_backups() {
 
         Missing directories are skipped:
 
-        >>> br.clean_outdated_backups /not/existing; echo $?
+        >>> br.clean-outdated-backups /not/existing; echo $?
         0
     '
     local -r target_path="$1"
@@ -476,24 +476,24 @@ br_clean_outdated_backups() {
         fi
     done
 }
-alias br.get_message=br_get_message
+alias br.get-message=br_get_message
 br_get_message() {
     local -r __documentation__='
         Creates the report message for given source, backup file path (without
         extension), backup result and optional post run command result. Line
         breaks are encoded as "\n".
 
-        >>> br.get_message /source /backup/daily/day true
+        >>> br.get-message /source /backup/daily/day true
         Source files in "/source" from node "test" successfully backed up to "/backup/daily/day.tar.gz".\n\nCurrent Backup structure:\n
 
-        >>> br.get_message /source /backup/daily/day false
+        >>> br.get-message /source /backup/daily/day false
         Source files in "/source" from node "test" should be backed up but has failed.\n\nCurrent Backup structure:\n
 
-        >>> br.get_message /source /backup/daily/day true true
+        >>> br.get-message /source /backup/daily/day true true
         +bl.doctest.contains
         \n\nPost run command was successful.\n\n
 
-        >>> br.get_message /source /backup/daily/day true false
+        >>> br.get-message /source /backup/daily/day true false
         +bl.doctest.contains
         \n\nPost run command was not successful!\n\n
     '
@@ -515,7 +515,7 @@ br_get_message() {
     message+='\n\nCurrent Backup structure:\n'
     echo "$message"
 }
-alias br.send_e_mail=br_send_e_mail
+alias br.send-e-mail=br_send_e_mail
 br_send_e_mail() {
     local -r __documentation__='
         Sends given message with the current backup structure of given target
@@ -524,7 +524,7 @@ br_send_e_mail() {
         >>> cd "$(br_bl_doctest_mktemp --directory)"
         >>> br_doctest_mock_commands
         >>> BR_SENDER_E_MAIL_ADDRESS=sender@b.tld
-        >>> br.send_e_mail a@b.tld "$PWD" "Saved \"/source\"." true
+        >>> br.send-e-mail a@b.tld "$PWD" "Saved \"/source\"." true
         >>> grep --extended-regexp "^(From|To|Subject):|/source" msmtp.log
         From: sender@b.tld
         To: a@b.tld
@@ -533,7 +533,7 @@ br_send_e_mail() {
 
         >>> cd "$(br_bl_doctest_mktemp --directory)"
         >>> br_doctest_mock_commands
-        >>> br.send_e_mail a@b.tld "$PWD" message false
+        >>> br.send-e-mail a@b.tld "$PWD" message false
         >>> grep "^Subject:" msmtp.log
         Subject: Backup has failed
     '
@@ -643,9 +643,9 @@ br_notify() {
     then
         local e_mail_address
         for e_mail_address in $(
-            br.get_e_mail_addresses "${BR_SOURCE_TARGET_MAPPINGS[$source_path]}"
+            br.get-e-mail-addresses "${BR_SOURCE_TARGET_MAPPINGS[$source_path]}"
         ); do
-            br.send_e_mail \
+            br.send-e-mail \
                 "$e_mail_address" "$target_path" "$message" "$successful"
         done
     fi
@@ -767,7 +767,7 @@ br_main() {
         not executed
     '
     if $BR_VERBOSE; then
-        bl.logging.set_level info
+        bl.logging.set-level info
     fi
     local -ir month_day_number="$(
         date +'%d' | \
@@ -777,22 +777,22 @@ br_main() {
     local source_path
     for source_path in "${!BR_SOURCE_TARGET_MAPPINGS[@]}"; do
         local target_path="$(
-            br.get_target_path "${BR_SOURCE_TARGET_MAPPINGS[$source_path]}"
+            br.get-target-path "${BR_SOURCE_TARGET_MAPPINGS[$source_path]}"
         )"
         local target_file_basepath="$(
-            br.get_target_file_basepath \
+            br.get-target-file-basepath \
                 "$target_path" "$month_day_number" "$week_day_number"
         )"
-        br.link_backup "$target_path" "$month_day_number" "$week_day_number"
+        br.link-backup "$target_path" "$month_day_number" "$week_day_number"
         local successful=false
         # NOTE: Outdated backups are only removed after a successful backup
         # run.
-        if br.run_backup "$source_path" "$target_path" "$target_file_basepath"
+        if br.run-backup "$source_path" "$target_path" "$target_file_basepath"
         then
-            if br.encrypt_backup "$target_file_basepath"; then
+            if br.encrypt-backup "$target_file_basepath"; then
                 successful=true
             fi
-            br.clean_outdated_backups "$target_path"
+            br.clean-outdated-backups "$target_path"
         fi
         local post_run_successful=''
         if $successful && [[ "$BR_POST_RUN_COMMAND" != '' ]]; then
@@ -803,7 +803,7 @@ br_main() {
             fi
         fi
         local message="$(
-            br.get_message \
+            br.get-message \
                 "$source_path" \
                 "$target_file_basepath" \
                 "$successful" \
@@ -812,7 +812,7 @@ br_main() {
         if [[ "$post_run_successful" == false ]]; then
             successful=false
         fi
-        if bl.logging.is_enabled info; then
+        if bl.logging.is-enabled info; then
             echo -e "$message"
             tree -h -t "$target_path"
             du --human-readable --summarize "$target_path"
@@ -822,11 +822,11 @@ br_main() {
     done
 }
 # endregion
-if bl.tools.is_main; then
+if bl.tools.is-main; then
     bl.exception.activate
     bl.exception.try
         br.main "$@"
-    bl.exception.catch_single
+    bl.exception.catch-single
     # region clean up
     {
         [ -f "$BL_MODULE_NAME_RESOLVING_CACHE_FILE_PATH" ] && \
