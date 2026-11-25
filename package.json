@@ -16,9 +16,7 @@
     "url": "git+https://github.com/thaibault/backup-rotation.git"
   },
   "main": "backup-rotation.sh",
-  "bin": {
-    "backup-rotation": "backup-rotation.sh"
-  },
+  "bin": "backup-rotation.sh",
   "files": [
     "backup-rotation.timer",
     "backup-rotation.service"
