@@ -47,7 +47,7 @@ are older than their configured retention days and lists them.
 >>> touch --date="-13 days" target/daily/current.tar.gz
 >>> touch --date="-57 days" target/weekly/outdated.tar.gz
 >>> touch --date="-366 days" target/monthly/outdated.tar.gz
->>> br.clean_outdated_backups "${PWD}/target" | sed "s:${PWD}/::"
+>>> br.clean-outdated-backups "${PWD}/target" | sed "s:${PWD}/::"
 >>> br_doctest_list target
 target/daily/outdated.tar.gz
 target/weekly/outdated.tar.gz
@@ -61,7 +61,7 @@ target/weekly
 Missing directories are skipped:
 
 ```bash
->>> br.clean_outdated_backups /not/existing; echo $?
+>>> br.clean-outdated-backups /not/existing; echo $?
 0
 ```
 ### Function br_download
@@ -77,29 +77,29 @@ path (without extension) which can be referenced as
 "$target_file_basepath".
 
 ```bash
->>> br.encrypt_backup target/daily/day; echo $?
+>>> br.encrypt-backup target/daily/day; echo $?
 0
 ```
 ```bash
 >>> BR_ENCRYPT_COMMAND="echo \"\$target_file_basepath\""
->>> br.encrypt_backup target/daily/day
+>>> br.encrypt-backup target/daily/day
 target/daily/day
 ```
 ```bash
 >>> BR_ENCRYPT_COMMAND=false
->>> br.encrypt_backup target/daily/day; echo $?
+>>> br.encrypt-backup target/daily/day; echo $?
 1
 ```
 ### Function br_get_e_mail_addresses
 Lists all e-mail addresses from given source target mapping value.
 
 ```bash
->>> br.get_e_mail_addresses "/backup a@b.tld c@d.tld"
+>>> br.get-e-mail-addresses "/backup a@b.tld c@d.tld"
 a@b.tld
 c@d.tld
 ```
 ```bash
->>> br.get_e_mail_addresses /backup
+>>> br.get-e-mail-addresses /backup
 ```
 ### Function br_get_message
 Creates the report message for given source, backup file path (without
@@ -107,20 +107,20 @@ extension), backup result and optional post run command result. Line
 breaks are encoded as "\n".
 
 ```bash
->>> br.get_message /source /backup/daily/day true
+>>> br.get-message /source /backup/daily/day true
 Source files in "/source" from node "test" successfully backed up to "/backup/daily/day.tar.gz".\n\nCurrent Backup structure:\n
 ```
 ```bash
->>> br.get_message /source /backup/daily/day false
+>>> br.get-message /source /backup/daily/day false
 Source files in "/source" from node "test" should be backed up but has failed.\n\nCurrent Backup structure:\n
 ```
 ```bash
->>> br.get_message /source /backup/daily/day true true
+>>> br.get-message /source /backup/daily/day true true
 +bl.doctest.contains
 \n\nPost run command was successful.\n\n
 ```
 ```bash
->>> br.get_message /source /backup/daily/day true false
+>>> br.get-message /source /backup/daily/day true false
 +bl.doctest.contains
 \n\nPost run command was not successful!\n\n
 ```
@@ -131,10 +131,10 @@ path for given month and week day number.
 ```bash
 >>> BR_MONTH_DAY_NUMBER=1
 >>> BR_WEEK_DAY_NUMBER=6
->>> br.get_target_file_basepath /backup 2 3
->>> br.get_target_file_basepath /backup 2 6
->>> br.get_target_file_basepath /backup 1 3
->>> br.get_target_file_basepath /backup 1 6
+>>> br.get-target-file-basepath /backup 2 3
+>>> br.get-target-file-basepath /backup 2 6
+>>> br.get-target-file-basepath /backup 1 3
+>>> br.get-target-file-basepath /backup 1 6
 /backup/daily/day
 /backup/weekly/week
 /backup/monthly/month
@@ -144,7 +144,7 @@ path for given month and week day number.
 Determines the target path from given source target mapping value.
 
 ```bash
->>> br.get_target_path "/backup a@b.tld c@d.tld"
+>>> br.get-target-path "/backup a@b.tld c@d.tld"
 /backup
 ```
 ### Function br_link_backup
@@ -155,7 +155,7 @@ Nothing is linked on a regular day:
 
 ```bash
 >>> cd "$(br_bl_doctest_mktemp --directory)"
->>> br.link_backup "${PWD}/target" 2 3
+>>> br.link-backup "${PWD}/target" 2 3
 >>> [ -e target ] || echo nothing linked
 nothing linked
 ```
@@ -165,7 +165,7 @@ A weekly backup is linked into the daily backups:
 >>> cd "$(br_bl_doctest_mktemp --directory)"
 >>> BR_MONTH_DAY_NUMBER=1
 >>> BR_WEEK_DAY_NUMBER=6
->>> br.link_backup "${PWD}/target" 2 6
+>>> br.link-backup "${PWD}/target" 2 6
 >>> br_doctest_list target
 target
 target/daily
@@ -177,7 +177,7 @@ A monthly backup is linked into the daily backups:
 >>> cd "$(br_bl_doctest_mktemp --directory)"
 >>> BR_MONTH_DAY_NUMBER=1
 >>> BR_WEEK_DAY_NUMBER=6
->>> br.link_backup "${PWD}/target" 1 3
+>>> br.link-backup "${PWD}/target" 1 3
 >>> br_doctest_list target
 target
 target/daily
@@ -190,7 +190,7 @@ and weekly backups:
 >>> cd "$(br_bl_doctest_mktemp --directory)"
 >>> BR_MONTH_DAY_NUMBER=1
 >>> BR_WEEK_DAY_NUMBER=6
->>> br.link_backup "${PWD}/target" 1 6
+>>> br.link-backup "${PWD}/target" 1 6
 >>> br_doctest_list target
 target
 target/daily
@@ -364,7 +364,7 @@ them as "$source_path", "$target_path" and "$target_file_basepath".
 >>> cd "$(br_bl_doctest_mktemp --directory)"
 >>> BR_COMMAND+=";"
 >>> local -r command="$BR_COMMAND"
->>> br.run_backup "${PWD}/source" "${PWD}/target" "${PWD}/target/daily/day"
+>>> br.run-backup "${PWD}/source" "${PWD}/target" "${PWD}/target/daily/day"
 >>> br_doctest_list target
 >>> [[ "$BR_COMMAND" == "$command" ]] && echo unchanged
 target
@@ -374,7 +374,7 @@ unchanged
 ```
 ```bash
 >>> BR_COMMAND="echo output; false"
->>> br.run_backup source target target/daily/day; echo $?
+>>> br.run-backup source target target/daily/day; echo $?
 1
 ```
 ### Function br_send_e_mail
@@ -385,7 +385,7 @@ path to given e-mail address.
 >>> cd "$(br_bl_doctest_mktemp --directory)"
 >>> br_doctest_mock_commands
 >>> BR_SENDER_E_MAIL_ADDRESS=sender@b.tld
->>> br.send_e_mail a@b.tld "$PWD" "Saved \"/source\"." true
+>>> br.send-e-mail a@b.tld "$PWD" "Saved \"/source\"." true
 >>> grep --extended-regexp "^(From|To|Subject):|/source" msmtp.log
 From: sender@b.tld
 To: a@b.tld
@@ -395,7 +395,7 @@ Subject: Backup was successful
 ```bash
 >>> cd "$(br_bl_doctest_mktemp --directory)"
 >>> br_doctest_mock_commands
->>> br.send_e_mail a@b.tld "$PWD" message false
+>>> br.send-e-mail a@b.tld "$PWD" message false
 >>> grep "^Subject:" msmtp.log
 Subject: Backup has failed
 ```

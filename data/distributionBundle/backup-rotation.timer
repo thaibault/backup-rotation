@@ -1,9 +1,0 @@
-[Unit]
-Description=Run backup-rotation.service every 24 hours
-
-[Timer]
-Unit=backup-rotation.service
-OnCalendar=*-*-* 01:00 Europe/Berlin
-
-[Install]
-WantedBy=timers.target
